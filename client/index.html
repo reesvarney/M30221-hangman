@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+  <title>hangman</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <nav>
+    <div class="brand">
+      <span class="large">hangman</span>
+      <span class="small">by RV</span>
+    </div>
+  </nav>
+  <main>
+    <div class="center-content top">
+      <div class="card">
+        <div class="card-title center-text">
+          Play
+        </div>
+        <form id="join_form" action="/game" method="GET">
+          <input name="id" type="text" placeholder="Enter lobby ID">
+          <button type="submit" class="btn go">Join</button>
+        </form>
+        <div class="text-divider">
+          or
+        </div>
+        <div class="center-text btn plain">
+          <a href="/game">Create new lobby</a>
+        </div>
+      </div>
+    </div>
+
+  
+  </main>
+
+</body>
