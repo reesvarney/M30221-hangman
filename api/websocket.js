@@ -1,5 +1,5 @@
 import  { WebSocketServer } from "ws";
-
+import { randomUUID} from "crypto";
 class wsConnection{
   constructor(ws, {logging=false}={}){
     this.handlers = {};
