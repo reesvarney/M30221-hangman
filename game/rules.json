@@ -1,0 +1,92 @@
+{
+  "fullGuesses": {
+    "name": "Allow full guesses", 
+    "type": "boolean", 
+    "defaultValue": true, 
+    "allowNull": false
+  },
+  "asyncTurns": {
+    "name": "Simultaneous turns", 
+    "type": "boolean", 
+    "defaultValue": false, 
+    "allowNull": false
+  },
+  "maxTime": {
+    "name": "Max Game Time (Seconds)", 
+    "type": "number", 
+    "defaultValue": null, 
+    "allowNull": true,
+    "minVal": 30,
+    "requires": {
+      "asyncTurns": true
+    }
+  },
+  "turnTime": {
+    "name": "Turn Time (Seconds)", 
+    "type": "number",
+    "defaultValue": null, 
+    "allowNull": true,
+    "minVal": 5,
+    "requires": {
+      "asyncTurns": false
+    }
+  },
+  "multiplayer": {
+    "name": "Multiplayer", 
+    "type": "boolean", 
+    "defaultValue": true, 
+    "allowNull": false
+  },
+  "aiOpponent": {
+    "name": "AI Opponent", 
+    "type": "boolean", 
+    "defaultValue": false, 
+    "allowNull": false,
+    "requires": {
+      "multiplayer": false
+    }
+  },
+  "maxPlayers": {
+    "name": "Max Players",
+    "type": "number",
+    "defaultValue": null,
+    "allowNull": true,
+    "minVal": 2,
+    "requires": {
+      "multiplayer": true
+    }
+  },
+  "maxLives": {
+    "name": "Max Lives", 
+    "type": "number", 
+    "defaultValue": 8, 
+    "allowNull": true,
+    "minVal": 1
+  },
+  "sameWord": {
+    "name": "Same Word", 
+    "type": "boolean", 
+    "defaultValue": false, 
+    "allowNull": false
+  },
+  "wordLength": {
+    "name": "Word Length", 
+    "type": "number", 
+    "defaultValue": 6, 
+    "allowNull": false,
+    "minVal": 4,
+    "maxVal": 20
+  },
+  "discovery": {
+    "name": "Allow Strangers", 
+    "type": "boolean", 
+    "defaultValue": false, 
+    "allowNull": false
+  },
+  "hints": {
+    "name": "Allow Hints", 
+    "type": "boolean", 
+    "defaultValue": false, 
+    "allowNull": false
+  }
+}

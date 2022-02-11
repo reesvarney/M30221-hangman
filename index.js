@@ -6,8 +6,7 @@ const port = process.env.PORT || 8080;
 
 const dbType = process.env.DB_TYPE || "memory";
 import db from "./storage/db.js";
-db.init(dbType, "persistent");
-db.init("memory", "active");
+await db.init();
 
 app.use('/', express.static('./client'));
 app.get('/', (req,res)=>{

@@ -1,9 +1,12 @@
 import { randomUUID} from "crypto";
 import game from './game.js';
+import players from './players.js';
+import rules from './rules.js';
 
 export default (db)=>{
-  function createLobby(hostId){
+  function createLobby(hostData){
     const lobbyId = randomUUID();
+    players.create(hostData);
     return lobbyId;
   }
   
@@ -11,15 +14,11 @@ export default (db)=>{
 
   }
 
-  function joinLobby(lobbyId, player){
-    
+  function joinLobby(lobbyId, playerData){
+    players.create(playerData, lobbyId);
   }
 
   function leaveLobby(lobbyId, playerId){
-
-  }
-
-  function setRules(lobbyId, rules){
 
   }
 
@@ -29,6 +28,7 @@ export default (db)=>{
     delete: deleteLobby,
     join: joinLobby,
     leave: leaveLobby,
-    setRules: setRules
+    rules: rules(db),
+    players: players(db)
   }
 }
