@@ -5,10 +5,27 @@ export default (db)=>{
       $type: data.type,
       $name: data.name,
       $lobby_id: lobbyId
-    })
+    });
+  };
+
+  function sendPlayerUpdate(id){
+    const player = db.query("SELECT type, id FROM active_players WHERE id=$id", {
+      $id: id
+    });
+    if( player[0].type === "ws" ){
+  
+    }
+  }
+
+  function deletePlayer(id){
+    db.query("DELETE FROM active_players WHERE id=$id", {
+      $id: id
+    });
   }
 
   return {
-    create: createPlayer
-  }
+    create: createPlayer,
+    update: sendPlayerUpdate,
+    delete: deletePlayer
+  };
 }
