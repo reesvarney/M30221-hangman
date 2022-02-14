@@ -24,22 +24,6 @@ class wsConnection{
         this.emit("client_error", JSON.stringify(err));
       }
     });
-
-    this.alive = true;
-    ws.on("pong", ()=>{
-      this.alive = true;
-    })
-    this.heartbeat = setInterval(()=>{
-      if(this.alive == false) {
-        for( const handler of this.dcHandlers){
-          handler();
-        };
-        this.ws.terminate();
-        clearInterval(this.heartbeat);
-      };
-      this.alive = false;
-      ws.ping();
-    }, 3000);
   }
 
   on(event, handler, group="main"){
@@ -65,36 +49,39 @@ class wsConnection{
   }
 }
 
-class wsServer{
-  constructor(server, {logging=false}={}){
-    this.server = new WebSocketServer({ server });
-    this.logging = logging;
-    this.handlers = [];
-    this.clients = [];
-    this.server.on('connection', (ws)=>{
-      const client = new wsConnection(ws, {logging});
-      this.clients.push(client);
-      for(const handler of this.handlers){
-        handler(client);
-      }
-    });
-  }
+let server;
+const clients = {};
 
-  on(event, handler){
-    for(const client of this.clients){
-      client.on(event, handler);
-    };
-  };
-
-  emit(event, data){
-    for(const client of this.clients){
-      client.emit(event, data);
-    };
-  };
-
-  onConnection(handler){
-    this.handlers.push(handler);
-  }
+function startServer(){
+  server = new WebSocketServer({ server });
+  this.server.on('connection', (ws)=>{
+    clients[randomUUID()] = ws;
+    addHandlers(ws);
+  });
 }
 
-export default wsServer;
+function sendMessage(id, data){
+  clients[id].send(JSON.stringify(data));
+}
+
+function addHeartbeat(ws){
+  let alive = true;
+  ws.on("pong", ()=>{
+    alive = true;
+  })
+  
+  let heartbeat = setInterval(()=>{
+    if(this.alive == false) {
+      ws.terminate();
+      clearInterval(heartbeat);
+    };
+    alive = false;
+    ws.ping();
+  }, 3000);
+}
+
+function addHandlers(ws){
+  ws
+}
+
+export default {startServer, clients, sendMessage};

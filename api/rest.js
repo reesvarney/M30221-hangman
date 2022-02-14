@@ -24,4 +24,8 @@ export default ({express})=>{
   router.post('/game/new', (req,res)=>{
     // Creates new game
   });
+
+  return {
+    router
+  };
 }

@@ -4,22 +4,21 @@ import players from './players.js';
 import rules from './rules.js';
 
 export default (db)=>{
-  function createLobby(hostData){
-    const lobbyId = randomUUID();
+  async function createLobby(hostData){
+    const lobbyId = randomUUID();;
+    await db.query("INSERT INTO TABLE lobbies VALUES ()", {
+
+    });
     players.create(hostData);
     return lobbyId;
   }
   
   function deleteLobby(lobbyId){
-
+    db.query("DELETE FROM lobbies WHERE id=$id", )
   }
 
   function joinLobby(lobbyId, playerData){
     players.create(playerData, lobbyId);
-  }
-
-  function leaveLobby(lobbyId, playerId){
-
   }
 
   return {
