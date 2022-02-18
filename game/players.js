@@ -1,6 +1,6 @@
 export default (db)=>{
   function createPlayer(data, lobbyId=null){
-    db.query("INSERT INTO TABLE active_players (id, type, name, lobby_id) VALUES ($id, $type, $name, $lobby_id);", {
+    db.query("INSERT INTO TABLE active_players (id, type, name, lobby_id, is_host) VALUES ($id, $type, $name, $lobby_id);", {
       $id: data.id,
       $type: data.type,
       $name: data.name,
@@ -25,7 +25,7 @@ export default (db)=>{
 
   return {
     create: createPlayer,
-    update: sendPlayerUpdate,
+    sendUpdate: sendPlayerUpdate,
     delete: deletePlayer
   };
 }

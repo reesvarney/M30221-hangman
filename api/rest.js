@@ -6,6 +6,7 @@ export default ({express})=>{
 
   router.get('/game/:id', (req,res)=>{
     //gets the game status
+    // Could implement long polling here
   });
 
   router.get('/game/:id/join', (req,res)=>{

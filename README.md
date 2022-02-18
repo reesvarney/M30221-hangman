@@ -42,6 +42,7 @@ WIP
 ## Sources
 I have used libraries or obtained data from the following sources:
  - [Express](https://www.npmjs.com/package/express)
+ - [DotEnv](https://www.npmjs.com/package/dotenv)
  - Words: 
     - [ENABLE Dictionary](https://www.wordgamedictionary.com/enable/download/enable.txt)
     - Filtered with: [Bad Words List](https://www.cs.cmu.edu/~biglou/resources/bad-words.txt)

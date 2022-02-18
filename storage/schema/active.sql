@@ -1,6 +1,5 @@
  CREATE TABLE IF NOT EXISTS lobbies (
   id CHAR(32) PRIMARY KEY NOT NULL,
-  host_id CHAR(32) FOREIGN KEY REFERENCES active_players(id),
   status VARCHAR(16) NOT NULL CHECK (status IN ("lobby", "game", "results"))
 );
 
@@ -25,8 +24,8 @@ CREATE TABLE IF NOT EXISTS rules (
   id CHAR(32) PRIMARY KEY NOT NULL,
   type VARCHAR(10) NOT NULL CHECK (type IN ("ws", "rest")),
   name VARCHAR(32) NOT NULL,
-  gamestate_id CHAR(32) FOREIGN KEY REFERENCES player_gamestates(id),
-  lobby_id CHAR(32) FOREIGN KEY REFERENCES lobbies(id)
+  lobby_id CHAR(32) FOREIGN KEY REFERENCES lobbies(id),
+  is_host BOOLEAN NOT NULL
  );
 
 /**
@@ -38,7 +37,7 @@ CREATE TABLE IF NOT EXISTS rules (
  */
 
 CREATE TABLE IF NOT EXISTS player_gamestates (
-  id CHAR(32) PRIMARY KEY NOT NULL,
+  player_id CHAR(32) PRIMARY KEY NOT NULL,
   score INTEGER NOT NULL,
   word VARCHAR(24),
   lives_used INTEGER,
