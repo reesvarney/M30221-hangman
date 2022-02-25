@@ -18,10 +18,10 @@ app.get('/game', (req,res)=>{
 });
 
 import restAPI from './api/rest.js';
-app.use('/api', restAPI({express, db}));
+app.use('/api', restAPI({express, db}).router);
 
-import wsAPI from './api/websocket.js';
-wsAPI(express, db);
+// import wsAPI from './api/websocket.js';
+// wsAPI(express, db);
 
 const server = app.listen(port, ()=>{
   console.log(`Listening on port: ${server.address().port}`)

@@ -34,12 +34,46 @@ export default ({db, rules})=>{
     return words[length][Math.floor(Math.random()*words[length].length)]
   }
 
-  function takeTurn(lobbyId, turnData){
+  async function takeTurn(lobbyId, turn){
+    const player_gamestate = await db.query("SELECT * FROM player_gamestates WHERE lobby_id=$lobby_id AND is_active=true", {
+      $lobby_id: lobbyId
+    });
     // validate turn, ability to make a turn should be confirmed from the request handler
-    if(turnData.type == "letter"){
-
-    } else if(turnData.type == "full_guess"){
-
+    let life_used = true;
+    if(turn.type == "letter"){
+      if(player_gamestate.used_letters.includes(turn.data)){
+        throw("letter already used")
+      }
+      if(player_gamestate.word.includes(turn.data)){
+        for(let i = 0; i < player_gamestate.word.length; i++){
+          if(player_gamestate.word[i] == turn.data){
+            player_gamestate.known_letters[i] = turn.data;
+          }
+        }
+        db.query("UPDATE player_gamestates SET known_letters=$known_letters, used_letters=$used_letters WHERE player_id=$player_id", {
+          $used_letters: player_gamestate.used_letters + turn.data,
+          $known_letters: player_gamestate.known_letters,
+          $player_id: player_gamestate.player_id
+        });
+      } else {
+        db.query("UPDATE player_gamestates SET lives_used=$lives_used, used_letters=$used_letters WHERE player_id=$player_id", {
+          $lives_used: player_gamestate.lives_used + 1,
+          $used_letters: player_gamestate.used_letters + turn.data,
+          $player_id: player_gamestate.player_id
+        })
+      }
+    } else if(turn.type == "full_guess"){
+      if(turn.data.toLowerCase() == player_gamestate.word){
+        db.query("UPDATE player_gamestates SET known_letters=$known_letters WHERE player_id=$player_id", {
+          $known_letters: player_gamestate.word,
+          $player_id: player_gamestate.player_id
+        })
+      } else {
+        db.query("UPDATE player_gamestates SET lives_used=$lives_used WHERE player_id=$player_id", {
+          $lives_used: player_gamestate.lives_used + 1,
+          $player_id: player_gamestate.player_id
+        })
+      }
     }
   }
 

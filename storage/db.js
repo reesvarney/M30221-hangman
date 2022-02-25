@@ -1,15 +1,18 @@
 import sqlite3 from 'sqlite3';
+import fs from 'fs/promises';
 let db = null;
 
 // TODO: Support multiple database types such as postgres to improve performance
 function init(){
-  db = new sqlite3.Database("memory", (err)=>{
+  db = new sqlite3.Database("memory", async(err)=>{
     if(err) console.log(err);
 
-    for(const queryString of (await fs.readFile(`./schema/active.sql`, "utf8")).split(";").filter(a=> a.length > 1)){
+    const file = await fs.readFile(`./storage/schema/active.sql`, "utf8");
+    for(const queryString of (file).split(";").filter(a=> a.length > 1)){
       await query(queryString + ';');
     }
-    for(const queryString of (await fs.readFile(`./schema/persistent.sql`, "utf8")).split(";").filter(a=> a.length > 1)){
+    const file2 = await fs.readFile(`./storage/schema/persistent.sql`, "utf8");
+    for(const queryString of (file2).split(";").filter(a=> a.length > 1)){
       await query(queryString + ';');
     }
   });

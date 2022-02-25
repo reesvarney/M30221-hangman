@@ -1,0 +1,27 @@
+{
+  "name": "hangman2",
+  "version": "1.0.0",
+  "description": "NodeJS web application created for Application Programming M30221.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reesvarney/hangman2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reesvarney/hangman2/issues"
+  },
+  "homepage": "https://github.com/reesvarney/hangman2#readme",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "sqlite3": "^5.0.2",
+    "ws": "^8.5.0"
+  }
+}
