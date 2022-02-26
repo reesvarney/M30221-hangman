@@ -1,10 +1,10 @@
  CREATE TABLE IF NOT EXISTS lobbies (
-  id CHAR(32) UNIQUE PRIMARY KEY NOT NULL,
+  id CHAR(8) UNIQUE PRIMARY KEY NOT NULL,
   status VARCHAR(16) NOT NULL CHECK (status IN ("lobby", "game", "results"))
 );
 
 CREATE TABLE IF NOT EXISTS rules (
-  lobby_id CHAR(32) REFERENCES lobbies(id),
+  lobby_id CHAR(8) REFERENCES lobbies(id),
   rule_id VARCHAR(16),
   -- Use 1 and 0 for true/ false, can't see any scenario where a standard rule would need to be a string or anything else (except null)
   -- Define constraints in code
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS rules (
   id CHAR(32) PRIMARY KEY NOT NULL,
   type VARCHAR(10) NOT NULL CHECK (type IN ("ws", "rest")),
   name VARCHAR(32) NOT NULL,
-  lobby_id CHAR(32) REFERENCES lobbies(id),
+  lobby_id CHAR(8) REFERENCES lobbies(id),
   is_host BOOLEAN NOT NULL,
   is_active BOOLEAN NOT NULL
  );

@@ -1,12 +1,12 @@
 // Implement a RESTful API for users to interact with the game
 // Technically, a client could use this game
 
-export default ({express})=>{
+export default ({express, lobby})=>{
   const router = express.Router();
 
   router.get('/game/:id', (req,res)=>{
-    //gets the game status
-    // Could implement long polling here
+    // add filter to:
+    // players, status, all, rules
   });
 
   router.get('/game/:id/join', (req,res)=>{
@@ -18,12 +18,17 @@ export default ({express})=>{
     // Alternatively a client could just send their turn if it is not a human player and it should end the same timeout
   });
 
-  router.post('/game/:id', (req,res)=>{
+  router.post('/game/:id/turn', (req,res)=>{
     //sends an input
   });
 
-  router.post('/game/new', (req,res)=>{
-    // Creates new game
+  router.post('/game/:id/rule', (req,res)=>{
+    //sets a rule
+  });
+
+  router.get('/game/new', (req,res)=>{
+    const newLobby = lobby.create(req);
+    res.redirect(`/game/${newLobby}`);
   });
 
   return {

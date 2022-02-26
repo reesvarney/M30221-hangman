@@ -25,24 +25,21 @@ export default ({db, rules})=>{
     db.query("UPDATE lobbies SET status='game' WHERE id=$id", {
       $id: lobbyId
     });
-
-    // todo: Return false if there are any issues
-    return true;
   }
 
   function getWord(length){
     return words[length][Math.floor(Math.random()*words[length].length)]
   }
 
+  // check in the request whether the user is authenticated to do this
   async function takeTurn(lobbyId, turn){
-    const player_gamestate = await db.query("SELECT * FROM player_gamestates WHERE lobby_id=$lobby_id AND is_active=true", {
+    const player_gamestate = (await db.query("SELECT * FROM player_gamestates WHERE lobby_id=$lobby_id AND is_active=true", {
       $lobby_id: lobbyId
-    });
+    }))[0];
     // validate turn, ability to make a turn should be confirmed from the request handler
-    let life_used = true;
     if(turn.type == "letter"){
       if(player_gamestate.used_letters.includes(turn.data)){
-        throw("letter already used")
+        throw("letter already used");
       }
       if(player_gamestate.word.includes(turn.data)){
         for(let i = 0; i < player_gamestate.word.length; i++){
@@ -74,7 +71,15 @@ export default ({db, rules})=>{
           $player_id: player_gamestate.player_id
         })
       }
+    };
+    const turns = true;
+    if(turns){
+      nextTurn()
     }
+  }
+
+  function nextTurn(){
+
   }
 
   function endGame(lobbyId){

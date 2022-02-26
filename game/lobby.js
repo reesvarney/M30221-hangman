@@ -1,4 +1,4 @@
-import { randomUUID} from "crypto";
+import { randomBytes } from "crypto";
 import playerFuncs from './players.js';
 import ruleFuncs from './rules.js';
 import gameFuncs from './game.js';
@@ -8,8 +8,20 @@ export default (db)=>{
   const rules = ruleFuncs({db});
   const game = gameFuncs({db, rules, players});
 
+  function createId(){
+    const newId = randomBytes(4).toString('hex');
+    const exists = db.query("SELECT TOP 1 FROM lobbies WHERE id=$id", {
+      $id: newId
+    });
+    console.log(exists)
+    if(exists != null){
+      return createId();
+    }
+    return newId;
+  }
+
   async function createLobby(hostData){
-    const lobbyId = randomUUID();;
+    const lobbyId = createId();
     await db.query("INSERT INTO TABLE lobbies (id, status) VALUES ($id, $status)", {
       $id: lobbyId,
       $status: "lobby"
