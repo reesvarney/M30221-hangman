@@ -10,7 +10,10 @@ import db from "./storage/db.js";
 await db.init();
 
 import lobby from './game/lobby.js'; 
+const lobbies = lobby(db);
 
+app.use(express.urlencoded());
+app.use(express.json());
 app.use('/', express.static('./client'));
 app.get('/', (req,res)=>{
   res.sendFile(resolve("./client/index.html"))
@@ -20,8 +23,22 @@ app.get('/game', (req,res)=>{
   res.sendFile(resolve("./client/game.html"))
 });
 
+app.get('/game/new', async(req,res)=>{
+  const newLobby = await lobbies.create();
+  res.redirect(`/game?id=${newLobby}`);
+});
+
+import { randomBytes } from "crypto";
+import session from "express-session";
+app.use(session({
+  // cookies won't need to be saved between server sessions so this can be created dynamically
+  secret: randomBytes(8).toString("hex"),
+  resave: false,
+  saveUninitialized: true
+}));
+
 import restAPI from './api/rest.js';
-app.use('/api', restAPI({express, db, lobby}).router);
+app.use('/api', restAPI({express, db, lobbies}).router);
 
 // import wsAPI from './api/websocket.js';
 // wsAPI(express, db);

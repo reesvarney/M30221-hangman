@@ -1,7 +1,7 @@
 import fs from "fs/promises";
-const rules = JSON.parse(await fs.readFile("./rules.json"));
+const rules = JSON.parse(await fs.readFile("./game/rules.json"));
 const ruleQuery = {
-  string: "INSERT INTO TABLE rules (lobby_id, rule_id, value) VALUES ($lobby_id, $rule_id, $value);",
+  string: "INSERT INTO rules (lobby_id, rule_id, value) VALUES ($lobby_id, $rule_id, $value);",
   data: Object.entries(rules).map((a)=> {
     return {
       $lobby_id: null, 
@@ -11,21 +11,23 @@ const ruleQuery = {
   })
 };
 
-export default (db)=>{
-  function createRules(lobbyId){
-    return await db.query(ruleQuery.string, ruleQuery.data.map(a=>a.$lobby_id = lobbyId));
+export default ({db})=>{
+  async function createRules(lobbyId){
+    return await db.query(ruleQuery.string, ruleQuery.data.map(a=>{a.$lobby_id = lobbyId; return a}));
   }
 
-  function deleteRules(lobbyId){
+  async function deleteRules(lobbyId){
     return await db.query(`DELETE FROM rules WHERE lobby_id=$lobby_id`, {$lobby_id: lobbyId});
   }
 
-  function getRules(lobbyId){
-    const data = await db.query(`SELECT * FROM rules WHERE lobby_id=$lobby_id`, {$lobby_id: lobbyId});
+  async function getLobbyRules(lobbyId){
+    const data = await db.query(`SELECT * FROM rules WHERE lobby_id=$lobby_id`, {
+      $lobby_id: lobbyId
+    });
     return Object.fromEntries(data.map(a=>[a.rule_id, a]));
   }
 
-  function setRule(lobbyId, id, value){
+  async function setRule(lobbyId, id, value){
     if(id in rules && (rules[id].type === typeof value || (value === null && rules[id].allowNull === true))){
       throw("Submitted value is not correct type");
     }
@@ -45,7 +47,7 @@ export default (db)=>{
   return {
     all: rules,
     setValue: setRule,
-    getValues: getRules,
+    getByLobby: getLobbyRules,
     delete: deleteRules,
     init: createRules
   }

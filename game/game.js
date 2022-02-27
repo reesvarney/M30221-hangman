@@ -82,15 +82,24 @@ export default ({db, rules})=>{
 
   }
 
-  function endGame(lobbyId){
-    db.query("UPDATE lobbies SET status='results' WHERE id=$id", {
+  function getPublicData(lobbyId, playerId){
+
+  }
+
+  function getGameByLobby(lobbyId){
+
+  }
+
+  async function endGame(lobbyId){
+    await db.query("UPDATE lobbies SET status='results' WHERE id=$id", {
       $id: lobbyId
     });
   }
 
-  export default {
+  return {
     start: startGame,
     takeTurn: takeTurn,
+    getData: getGameByLobby,
     end: endGame
   }
 }

@@ -4,7 +4,7 @@ let db = null;
 
 // TODO: Support multiple database types such as postgres to improve performance
 function init(){
-  db = new sqlite3.Database("memory", async(err)=>{
+  db = new sqlite3.Database(":memory:", async(err)=>{
     if(err) console.log(err);
 
     const file = await fs.readFile(`./storage/schema/active.sql`, "utf8");
@@ -24,14 +24,14 @@ async function query(string, values={}){
     const newVals = {};
     const paramValues = /VALUES *(?<values>\(.*?\))/mg.exec(string).groups.values;
     const params = paramValues.substring(1, paramValues.length-1).split(',').map(a => a.trim());
-    let paramString = "("
+    let paramString = ""
     for(let i = 0; i < values.length; i++){
       for(const [name, value] of Object.entries(values[i])){
         newVals[name + i] = value;
       }
       paramString += `(${params.map(a=> `${a}${i}`).join(", ")}),`
     }
-    string = string.replace( /VALUES *\(.*?\)/mg, `VALUES (${paramString.slice(0, -1)})`);
+    string = string.replace( /VALUES *\(.*?\)/mg, `VALUES ${paramString.slice(0, -1)}`);
     values = newVals;
   }
   return new Promise((resolve, reject)=>{

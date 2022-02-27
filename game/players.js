@@ -1,20 +1,27 @@
-export default (db)=>{
-  function createPlayer(data, lobbyId=null){
-    db.query("INSERT INTO TABLE active_players (id, type, name, lobby_id, is_host) VALUES ($id, $type, $name, $lobby_id);", {
-      $id: data.id,
-      $type: data.type,
-      $name: data.name,
+import {randomUUID} from "crypto";
+
+export default ({db})=>{
+  async function createPlayer(lobbyId, {type, name}){
+    const isHost = await db.query("SELECT is_host FROM active_players WHERE is_host=true AND lobby_id=$lobby_id", {
       $lobby_id: lobbyId
     });
+    const id = randomUUID();
+    await db.query("INSERT INTO active_players (id, type, name, lobby_id, is_host, is_active) VALUES ($id, $type, $name, $lobby_id, $is_host, $is_active);", {
+      $id: id,
+      $type: type,
+      $name: name,
+      $lobby_id: lobbyId,
+      $is_host: (isHost.length == 0),
+      $is_active: false
+    });
+    return id;
   };
 
-  function sendPlayerUpdate(id){
-    const player = db.query("SELECT type, id FROM active_players WHERE id=$id", {
-      $id: id
+  async function getLobbyPlayers(lobbyId){
+    const players = await db.query("SELECT name FROM active_players WHERE lobby_id=$lobby_id", {
+      $lobby_id: lobbyId
     });
-    if( player[0].type === "ws" ){
-  
-    }
+    return players;
   }
 
   function deletePlayer(id){
@@ -25,7 +32,7 @@ export default (db)=>{
 
   return {
     create: createPlayer,
-    sendUpdate: sendPlayerUpdate,
+    getByLobby: getLobbyPlayers,
     delete: deletePlayer
   };
 }

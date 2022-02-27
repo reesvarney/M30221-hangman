@@ -18,6 +18,20 @@
   </main>
 </body>
 
+<template id="identity">
+  <div class="center-content top">
+    <div class="card">
+      <div class="card-title">{{createOrJoin}} lobby</div>
+      <form id="identity_form">
+        <div class="name">
+          <input type="text" name="name" placeholder="Enter username">
+          <button class="btn go" type="submit">{{createOrJoin}}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
 <template id="results">
   <div class="center-content top">
     <div class="card">

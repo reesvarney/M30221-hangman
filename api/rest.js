@@ -1,34 +1,45 @@
 // Implement a RESTful API for users to interact with the game
 // Technically, a client could use this game
 
-export default ({express, lobby})=>{
+export default ({express, lobbies})=>{
   const router = express.Router();
+  const playerIds = {};
 
-  router.get('/game/:id', (req,res)=>{
-    // add filter to:
-    // players, status, all, rules
+  router.get('/:id', async(req,res)=>{
+    // Have authentication status for spectating or name needs submission
+    try{
+      const data = await lobbies.getData(req.params.id);
+      data.authenticated = (req.session.username != undefined);
+      res.json(data);
+    } catch(err){
+      res.json({error: err})
+    }
+
   });
 
-  router.get('/game/:id/join', (req,res)=>{
+  router.post('/:id/join', async(req,res)=>{
     //joins the game, authorising the user to send inputs
-  });
+    console.log("body", req.body, "query", req.query);
+    const playerId = await lobbies.players.create(req.params.id, {type: "rest", name: req.body.name})
+    playerIds[req.session.id] = req.params.id;
+    res.status(200).send(playerId);
+  }); 
 
-  router.post('/acceptTurn', (req,res)=>{
+  router.get('/:id/poll', async(req, res)=>{
+
+  })
+
+  router.post('/:id/acceptTurn', async(req,res)=>{
     // Accepts turn, as we are no longer using websockets to watch disconnects this will make sure that the player is still there
     // Alternatively a client could just send their turn if it is not a human player and it should end the same timeout
   });
 
-  router.post('/game/:id/turn', (req,res)=>{
+  router.post('/:id/turn', async(req,res)=>{
     //sends an input
   });
 
-  router.post('/game/:id/rule', (req,res)=>{
+  router.post('/:id/rule', async(req,res)=>{
     //sets a rule
-  });
-
-  router.get('/game/new', (req,res)=>{
-    const newLobby = lobby.create(req);
-    res.redirect(`/game/${newLobby}`);
   });
 
   return {
