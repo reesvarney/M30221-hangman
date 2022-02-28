@@ -1,9 +1,16 @@
 // Implement a RESTful API for users to interact with the game
 // Technically, a client could use this game
 
+import fs from "fs/promises";
+
 export default ({express, lobbies})=>{
   const router = express.Router();
   const playerIds = {};
+
+  router.get('/rules', async(req,res)=>{
+    const rules = await fs.readFile("./game/rules.json");
+    res.json(JSON.parse(rules))
+  })
 
   router.get('/:id', async(req,res)=>{
     // Have authentication status for spectating or name needs submission
@@ -14,7 +21,6 @@ export default ({express, lobbies})=>{
     } catch(err){
       res.json({error: err})
     }
-
   });
 
   router.post('/:id/join', async(req,res)=>{
@@ -29,7 +35,6 @@ export default ({express, lobbies})=>{
     } catch(err){
       res.status(400).json({error: err})
     }
-
   }); 
 
   router.get('/:id/poll', async(req, res)=>{
