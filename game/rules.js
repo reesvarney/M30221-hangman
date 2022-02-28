@@ -21,10 +21,10 @@ export default ({db})=>{
   }
 
   async function getLobbyRules(lobbyId){
-    const data = await db.query(`SELECT * FROM rules WHERE lobby_id=$lobby_id`, {
+    const data = await db.query(`SELECT rule_id, value FROM rules WHERE lobby_id=$lobby_id`, {
       $lobby_id: lobbyId
     });
-    return Object.fromEntries(data.map(a=>[a.rule_id, a]));
+    return Object.fromEntries(data.map(a=>[a.rule_id, a.value]));
   }
 
   async function setRule(lobbyId, id, value){

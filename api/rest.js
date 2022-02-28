@@ -9,7 +9,7 @@ export default ({express, lobbies})=>{
     // Have authentication status for spectating or name needs submission
     try{
       const data = await lobbies.getData(req.params.id);
-      data.authenticated = (req.session.username != undefined);
+      data.authenticated = (Array.isArray(playerIds[req.session.id]) && playerIds[req.session.id].includes(req.params.id));
       res.json(data);
     } catch(err){
       res.json({error: err})
@@ -19,10 +19,17 @@ export default ({express, lobbies})=>{
 
   router.post('/:id/join', async(req,res)=>{
     //joins the game, authorising the user to send inputs
-    console.log("body", req.body, "query", req.query);
-    const playerId = await lobbies.players.create(req.params.id, {type: "rest", name: req.body.name})
-    playerIds[req.session.id] = req.params.id;
-    res.status(200).send(playerId);
+    try{
+      const playerId = await lobbies.players.create(req.params.id, {type: "rest", name: req.body.name})
+      if(playerIds[req.session.id] === undefined){
+        playerIds[req.session.id] = [];
+      }
+      playerIds[req.session.id].push(req.params.id);
+      res.status(200).json(playerId);
+    } catch(err){
+      res.status(400).json({error: err})
+    }
+
   }); 
 
   router.get('/:id/poll', async(req, res)=>{

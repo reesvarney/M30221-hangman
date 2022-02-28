@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS rules (
   lobby_id CHAR(8) REFERENCES lobbies(id),
   is_host BOOLEAN NOT NULL,
   is_active BOOLEAN NOT NULL,
-  CONSTRAINT UNIQUE (name, lobby_id)
+  CONSTRAINT unique_name UNIQUE (name, lobby_id)
  );
 
 /**

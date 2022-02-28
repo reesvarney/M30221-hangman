@@ -18,7 +18,7 @@ export default ({db})=>{
   };
 
   async function getLobbyPlayers(lobbyId){
-    const players = await db.query("SELECT name FROM active_players WHERE lobby_id=$lobby_id", {
+    const players = await db.query("SELECT name, is_host, is_active, id FROM active_players WHERE lobby_id=$lobby_id", {
       $lobby_id: lobbyId
     });
     return players;

@@ -46,7 +46,7 @@ export default (db)=>{
     await game.checkPlayers(lobbyId);
   }
 
-  async function getLobbyById(lobbyId){
+  async function getLobbyById(lobbyId, player_id=null){
     const lobbyData = {};
     const status = (await db.query("SELECT status FROM lobbies WHERE id=$id", {
       $id: lobbyId
@@ -59,6 +59,9 @@ export default (db)=>{
       lobbyData.rules = await rules.getByLobby(lobbyId);
     };
     lobbyData.players = await players.getByLobby(lobbyId);
+    if(player_id != null){
+      // get gamestate
+    }
     return lobbyData
   }
 
