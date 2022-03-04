@@ -4,7 +4,7 @@ NodeJS web application created for Application Programming M30221.
 ## Project Aims
 After a previous less successful attempt at creating the game with a websocket based approach I have adopted the following goals:
  - Create a working hangman game, with feature parity to version 1
- - Complete separation between the client and functionality, providing all logic through a REST API
+ - Complete separation between the API and logic
  - Store minimal data inside process memory, allowing for the potential of multiple server instances/ load distribution in a production environment
 
 ## Development

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS rules (
 
  CREATE TABLE IF NOT EXISTS active_players (
   id CHAR(32) PRIMARY KEY NOT NULL,
-  type VARCHAR(10) NOT NULL CHECK (type IN ("ws", "rest")),
+  session_id VARCHAR(64) NOT NULL,
   name VARCHAR(32) NOT NULL,
   lobby_id CHAR(8) REFERENCES lobbies(id),
   is_host BOOLEAN NOT NULL,

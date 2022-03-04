@@ -1,6 +1,6 @@
 class WebsocketConnection{
-  constructor(url){
-    this.connection = new WebSocket(url);
+  constructor(){
+    this.connection = new WebSocket(`ws://${window.location.host}/${window.gameId}`);
     this.createListeners();
     this.handlers = {};
   }
@@ -15,11 +15,6 @@ class WebsocketConnection{
         }
       }
     }
-  }
-
-  emit(event, data){
-    console.log("WS SENT ", {event, data});
-    this.connection.send(JSON.stringify({event, data}));
   }
 
   on(event, handler){

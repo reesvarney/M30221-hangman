@@ -30,7 +30,7 @@ export default (db)=>{
   }
   
   async function deleteLobby(lobbyId){
-    db.query("DELETE FROM lobbies WHERE id=$id", {
+    await db.query("DELETE FROM lobbies WHERE id=$id", {
       $id: lobbyId
     })
   }
@@ -41,12 +41,18 @@ export default (db)=>{
   }
 
   async function removePlayer(lobbyId, playerId){
-    await players.remove(playerId);
-    // Check that host/ active player is not removed player
-    await game.checkPlayers(lobbyId);
+    await players.delete(lobbyId, playerId);
+    if((await players.getByLobby(lobbyId)).length == 0){
+      await deleteLobby(lobbyId);
+      console.log(await db.query("SELECT * FROM lobbies WHERE id=$id", {
+        $id: lobbyId
+      }));
+    } else {
+      await game.checkPlayers(lobbyId);
+    };
   }
 
-  async function getLobbyById(lobbyId, player_id=null){
+  async function getLobbyById(lobbyId, sessionId=null){
     const lobbyData = {};
     const status = (await db.query("SELECT status FROM lobbies WHERE id=$id", {
       $id: lobbyId
@@ -55,12 +61,12 @@ export default (db)=>{
       throw("lobby_not_exist")
     }
     lobbyData.status = status[0].status;
-    if(lobbyData.status == "lobby"){
-      lobbyData.rules = await rules.getByLobby(lobbyId);
-    };
+    lobbyData.rules = await rules.getByLobby(lobbyId);
     lobbyData.players = await players.getByLobby(lobbyId);
-    if(player_id != null){
+    lobbyData.playerId = await players.getId(lobbyId, sessionId);
+    if(lobbyData.playerId != null && lobbyData.status == "game"){
       // get gamestate
+      lobbyData.gameStatus = (await game.getPlayerData(lobbyData.playerId))[0];
     }
     return lobbyData
   }

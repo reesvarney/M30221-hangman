@@ -1,6 +1,6 @@
 import render from "./templates.js";
 import request from "./request.js";
-export default (onAuth)=>{
+export default ()=>{
   document.getElementById("page_content").innerHTML = render("identity", {createOrJoin: (window.gameData.players.length === 0) ? "Create" : "Join"});
   document.getElementById("identity_form").addEventListener("submit", async(e)=>{
     e.preventDefault();
@@ -8,7 +8,5 @@ export default (onAuth)=>{
     const success = await request.POST(`/api/${window.gameId}/join`, {
       name: data.get("name")
     });
-    window.playerId = success;
-    onAuth()
   })
 }

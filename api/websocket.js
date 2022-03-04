@@ -1,87 +1,61 @@
 import  { WebSocketServer } from "ws";
-import { randomUUID} from "crypto";
-class wsConnection{
-  constructor(ws, {logging=false}={}){
-    this.handlers = {};
-    this.logging = logging;
-    this.ws = ws;
-    this.id = randomUUID();
-    this.dcHandlers = [];
-    ws.on('message', (msg)=>{
-      try{
-        const {event, data} = JSON.parse(msg.toString());
-        if(typeof event !== "string"){
-          throw("Invalid type for event");
-        }
-        if(this.logging) console.log("WS RECEIVED ", {event, data});
-        if(this.handlers[event] !== undefined){
-          for(const {handler, group} of this.handlers[event]){
-            handler(data);
-          };
-        };
-      } catch(err){
-        console.log(err);
-        this.emit("client_error", JSON.stringify(err));
-      }
-    });
-  }
-
-  on(event, handler, group="main"){
-    if(this.handlers[event] === undefined){
-      this.handlers[event] = [];
-    };
-    this.handlers[event].push({handler, group});
-  }
-
-  removeGroup(eventGroup){
-    for(const [event, eventHandlers] of Object.entries(this.handlers)){
-      this.handlers[event] = eventHandlers.filter(a=>a.group !== eventGroup);
-    }
-  }
-
-  emit(event, data=null){
-    if(this.logging) console.log("WS SENT ", {event,data})
-    this.ws.send(JSON.stringify({event, data}));
-  }
-
-  onDisconnect(handler){
-    this.dcHandlers.push(handler);
-  }
-}
-
-let server;
 const clients = {};
 
-function startServer(){
-  server = new WebSocketServer({ server });
-  this.server.on('connection', (ws)=>{
-    clients[randomUUID()] = ws;
-    addHandlers(ws);
-  });
-}
+function startServer({server, sessionParser, lobbies}){
+  const wss = new WebSocketServer({ server });
 
-function sendMessage(id, data){
-  clients[id].send(JSON.stringify(data));
-}
+  const disconnectHandlers = [];
 
-function addHeartbeat(ws){
-  let alive = true;
-  ws.on("pong", ()=>{
-    alive = true;
-  })
+  wss.on('connection', (ws, req)=>{
+    sessionParser(req, {}, ()=>{
+      const sid = req.sessionID;
+      // remove leading slash
+      const lobbyId = req.url.substring(1);
+      if(clients[lobbyId] == undefined){
+        clients[lobbyId] = {};
+      }
+      if(clients[lobbyId][sid] != undefined){
+        clearInterval(clients[lobbyId][sid].heartbeat);
+        clients[lobbyId][sid].ws.terminate(); 
+      };
+      
+      let alive = true;
   
-  let heartbeat = setInterval(()=>{
-    if(this.alive == false) {
-      ws.terminate();
-      clearInterval(heartbeat);
+      ws.on("pong", ()=>{
+        alive = true;
+      })
+  
+      let heartbeat = setInterval(async()=>{
+        if(alive == false) {
+          clearInterval(heartbeat);
+          ws.terminate();
+          delete clients[lobbyId][sid];
+          await lobbies.leave(lobbyId, sid);
+          updateClient(lobbyId);
+        };
+        alive = false;
+        ws.ping();
+      }, 5000);
+  
+      clients[lobbyId][sid] = {ws, heartbeat};
+    });  
+    })
+
+  // tell all ws connections for this client to do an update
+  // but send the lobby id so only one actually has to do it
+  function updateClient(lobbyId, socketId=null){
+    if(socketId == null){
+      for(const sid of Object.keys(clients[lobbyId])){
+        updateClient(lobbyId, sid)
+      }
+    } else {
+      if(clients[lobbyId] != undefined && clients[lobbyId][socketId] != undefined){
+        clients[lobbyId][socketId].ws.send(JSON.stringify({event: "do_update"}));
+      }
     };
-    alive = false;
-    ws.ping();
-  }, 3000);
+  }
+
+  return {updateClient}
 }
 
-function addHandlers(ws){
-  ws
-}
-
-export default {startServer, clients, sendMessage};
+export default startServer;

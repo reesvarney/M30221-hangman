@@ -30,19 +30,20 @@ app.get('/game/new', async(req,res)=>{
 
 import { randomBytes } from "crypto";
 import session from "express-session";
-app.use(session({
+const sessionParser = session({
   // cookies won't need to be saved between server sessions so this can be created dynamically
   secret: randomBytes(8).toString("hex"),
   resave: false,
   saveUninitialized: true
-}));
-
-import restAPI from './api/rest.js';
-app.use('/api', restAPI({express, db, lobbies}).router);
-
-// import wsAPI from './api/websocket.js';
-// wsAPI(express, db);
+})
+app.use(sessionParser);
 
 const server = app.listen(port, ()=>{
   console.log(`Listening on port: ${server.address().port}`)
 });
+
+import startWSS from './api/websocket.js';
+const wss = startWSS({server, lobbies, sessionParser});
+
+import restAPI from './api/rest.js';
+app.use('/api', restAPI({express, db, lobbies, wss}).router);

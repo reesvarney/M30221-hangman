@@ -1,28 +1,45 @@
 import render from "./templates.js";
 import request from "./request.js";
-
-const ruleData = JSON.parse(await request.GET('/api/rules'));
 // temp
-const isHost = true;
 async function displayLobby(){
   if(window.currentPage != "lobby"){
     document.getElementById("page_content").innerHTML = render("lobby");
     window.currentPage = "lobby";
+    if(window.isHost){
+      document.getElementById("start_btn").addEventListener("click", ()=>{
+        request.POST(`/api/${window.gameId}/start_game`)
+      });
+    }
   }
   constructRules();
+  if(window.isHost){
+    const ruleForm = document.getElementById("game_rules");
+
+    ruleForm.addEventListener("submit",(e)=>{
+      e.preventDefault();
+    });
+  }
 }
 
 async function constructRules(){
   const ruleForm = document.getElementById("game_rules");
   ruleForm.innerHTML = "";
-  for(const [id, rule] of Object.entries(ruleData)){
+  for(const [id, rule] of Object.entries(window.gameData.rules)){
     let input = document.createElement("input");
     input.name = id;
     const label = document.createElement("label");
-    label.innerText = rule.label;
+    label.innerText = rule.name;
+    let sendDataTimeout = null;
 
-    if(isHost){
-      if((rule.requires != null && ruleData[rule.requires.rule].value != rule.requires.value)) input.disabled = true;
+    if(window.isHost){
+      if(rule.requires != null){
+        for(const [reqId, reqVal] of Object.entries(rule.requires)){
+          if(window.gameData.rules[reqId].value != reqVal) {
+            input.disabled = true;
+            break;
+          };
+        }
+      }
     } else {
       input.disabled = true
     }
@@ -36,7 +53,6 @@ async function constructRules(){
         if(rule.maxVal != null) input.max = rule.maxVal;
 
         if(rule.allowNull == true){
-          console.log(rule)
           const oldInput = input;
           const nullBox = input.cloneNode();
 
@@ -46,8 +62,7 @@ async function constructRules(){
           nullBox.type = "checkbox";
           nullBox.checked = !(["null", null].includes(rule.value));
 
-          if(isHost){
-            let sendDataTimeout = null;
+          if(window.isHost){
             if(!nullBox.checked) oldInput.disabled = true;
             nullBox.addEventListener("input", (e)=>{
               if(!nullBox.checked) {
@@ -55,8 +70,17 @@ async function constructRules(){
                   clearTimeout(sendDataTimeout);
                 }
                 // this.ws.emit("setRule", {rule: name, value: null});
+                request.POST(`/api/${window.gameId}/rule`, {
+                  rule: id,
+                  value: null
+                });
               } else {
                 // this.ws.emit("setRule", {rule: name, value: oldInput.value});
+                console.log(oldInput.value)
+                request.POST(`/api/${window.gameId}/rule`, {
+                  rule: id,
+                  value: oldInput.value
+                });
               };
             });
 
@@ -66,7 +90,12 @@ async function constructRules(){
               }
               sendDataTimeout = setTimeout(()=>{
                 // this.ws.emit("setRule", {rule: name, value: oldInput.value});
-              }, 3000)
+                console.log(oldInput.value)
+                request.POST(`/api/${window.gameId}/rule`, {
+                  rule: id,
+                  value: oldInput.value
+                })
+              }, 500)
             });
           }
 
@@ -75,16 +104,33 @@ async function constructRules(){
           input.appendChild(nullBox);
           input.appendChild(oldInput);
         }else {
-          if((rule.requires != null && ruleData[rule.requires.rule].value != rule.requires.value)) input.disabled = true;
+          if((rule.requires != null && window.gameData.rules[rule.requires.rule].value != rule.requires.value)) input.disabled = true;
+          input.addEventListener("input", (e)=>{
+            if(sendDataTimeout!= null){
+              clearTimeout(sendDataTimeout);
+            }
+            sendDataTimeout = setTimeout(()=>{
+              // this.ws.emit("setRule", {rule: name, value: oldInput.value});
+              console.log(input.value)
+              request.POST(`/api/${window.gameId}/rule`, {
+                rule: id,
+                value: input.value
+              })
+            }, 500)
+          });
         }
         break;
       case "boolean":
         input.type = "checkbox";
         input.value = true;
         input.checked = rule.value;
-        if(isHost){
+        if(window.isHost){
           input.addEventListener("input", (e)=>{
             // this.ws.emit("setRule", {rule: name, value: (input.checked)});
+            request.POST(`/api/${window.gameId}/rule`, {
+              rule: id,
+              value: (input.checked)
+            })
           });
         }
         break;

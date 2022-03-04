@@ -28,19 +28,23 @@ export default ({db})=>{
   }
 
   async function setRule(lobbyId, id, value){
-    if(id in rules && (rules[id].type === typeof value || (value === null && rules[id].allowNull === true))){
+    if(value == "null") value = null;
+    if(rules[id].type == 'number' && value != null && Number(value) != NaN){
+      value = Number(value);
+    }
+    if(!(rules[id] != undefined && (rules[id].type === typeof value || (value === null && rules[id].allowNull == true)))){
       throw("Submitted value is not correct type");
     }
-    if(rules[id].minVal !== undefined && value < rules[id].minVal){
+    if(rules[id].minVal !== undefined && value < rules[id].minVal && value != null){
       throw("Submitted value is too small");
     }
-    if(rules[id].maxVal !== undefined && value > rules[id].maxVal){
+    if(rules[id].maxVal !== undefined && value > rules[id].maxVal && value != null){
       throw("Submitted value is too large");
     }
     return await db.query("UPDATE rules SET value=$value WHERE lobby_id=$lobby_id AND rule_id=$rule_id;", {
       $lobby_id: lobbyId,
       $rule_id: id,
-      $value: new Number(value)
+      $value: value
     });
   }
 
