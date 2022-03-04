@@ -50,11 +50,9 @@ export default ({ db, rules }) => {
   // check in the request whether the user is authenticated to do this
   async function takeTurn(playerId, turn) {
     turn.data = turn.data.toLowerCase();
-    console.log(playerId, await db.query('SELECT * FROM player_gamestates'));
     const playerGamestate = (await db.query('SELECT * FROM player_gamestates WHERE player_id=$player_id', {
       $player_id: playerId,
     }))[0];
-    console.log(playerGamestate);
     // validate turn, ability to make a turn should be confirmed from the request handler
     if (turn.type === 'letter') {
       const newKnownLetters = playerGamestate.known_letters.split('');
@@ -63,8 +61,7 @@ export default ({ db, rules }) => {
       }
       if (playerGamestate.word.includes(turn.data)) {
         for (let i = 0; i < playerGamestate.word.length; i++) {
-          if (playerGamestate.word[i] == turn.data) {
-            console.log('found pos in word');
+          if (playerGamestate.word[i] === turn.data) {
             newKnownLetters[i] = turn.data;
           }
         }
@@ -73,6 +70,9 @@ export default ({ db, rules }) => {
           $known_letters: newKnownLetters.join(''),
           $player_id: playerGamestate.player_id,
         });
+        if (newKnownLetters.join('') === playerGamestate.word) {
+          checkEnd(playerId);
+        }
       } else {
         await db.query('UPDATE player_gamestates SET lives_used=$lives_used, used_letters=$used_letters WHERE player_id=$player_id', {
           $lives_used: playerGamestate.lives_used + 1,
@@ -81,11 +81,13 @@ export default ({ db, rules }) => {
         });
       }
     } else if (turn.type === 'full_guess') {
+      // check that full guesses are allowed
       if (turn.data.toLowerCase() === playerGamestate.word) {
         await db.query('UPDATE player_gamestates SET known_letters=$known_letters WHERE player_id=$player_id', {
           $known_letters: playerGamestate.word,
           $player_id: playerGamestate.player_id,
         });
+        checkEnd(playerId);
       } else {
         await db.query('UPDATE player_gamestates SET lives_used=$lives_used WHERE player_id=$player_id', {
           $lives_used: playerGamestate.lives_used + 1,
@@ -93,10 +95,26 @@ export default ({ db, rules }) => {
         });
       }
     }
+    // replace with actual rule value
     const turns = true;
     if (turns) {
       nextTurn(playerId);
     }
+  }
+
+  async function checkEnd(playerId) {
+    const gameStates = await db.query('SELECT word, known_letters, lobby_id FROM lobbies LEFT JOIN active_players ON lobbies.id=active_players.lobby_id LEFT JOIN player_gamestates ON active_players.id=player_gamestates.player_id WHERE lobbies.id IN (SELECT lobby_id FROM active_players WHERE id=$id)', {
+      $id: playerId,
+    });
+    console.log(gameStates);
+    for (const gameState of gameStates) {
+      if (gameState.word !== gameState.known_letters) {
+        return;
+      }
+    }
+    await db.query("UPDATE lobbies SET status='results' WHERE id=$id", {
+      $id: gameStates[0].lobby_id,
+    });
   }
 
   async function nextTurn(playerId) {
@@ -130,16 +148,9 @@ export default ({ db, rules }) => {
     return playerData;
   }
 
-  async function endGame(lobbyId) {
-    await db.query("UPDATE lobbies SET status='results' WHERE id=$id", {
-      $id: lobbyId,
-    });
-  }
-
   return {
     start: startGame,
     takeTurn,
     getPlayerData: getAllowedData,
-    end: endGame,
   };
 };

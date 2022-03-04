@@ -61,12 +61,15 @@ export default ({ express, lobbies, wss }) => {
     }
   }
 
+  router.get('/:id/results', async (req, res) => {
+
+  });
+
   // router.get('/:id/poll', checkPlayer, async (req, res) => {
 
   // });
 
   router.post('/:id/start_game', checkHost, async (req, res) => {
-    console.log('starting game...');
     await lobbies.game.start(req.params.id);
     res.sendStatus(200);
     wss.updateClient(req.params.id);
@@ -86,7 +89,6 @@ export default ({ express, lobbies, wss }) => {
     } catch (err) {
       res.status(400).json({ error: err });
     }
-    console.log('turn complete');
   });
 
   router.post('/:id/rule', checkHost, async (req, res) => {
