@@ -4,7 +4,7 @@
   "description": "NodeJS web application created for Application Programming M30221.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "eslint *.js",
     "start": "node index"
   },
   "repository": {
@@ -25,5 +25,16 @@
     "express-session": "^1.17.2",
     "sqlite3": "^5.0.2",
     "ws": "^8.5.0"
+  },
+  "eslintConfig": {
+    "extends": "portsoc",
+    "root": true,
+    "env": {
+      "browser": true
+    }
+  },
+  "devDependencies": {
+    "eslint": "^8.10.0",
+    "eslint-config-portsoc": "^1.0.0"
   }
 }
