@@ -1,84 +1,84 @@
-import { randomBytes } from "crypto";
+import { randomBytes } from 'crypto';
 import playerFuncs from './players.js';
 import ruleFuncs from './rules.js';
 import gameFuncs from './game.js';
 
-export default (db)=>{
-  const players = playerFuncs({db});
-  const rules = ruleFuncs({db});
-  const game = gameFuncs({db, rules, players});
+export default (db) => {
+  const players = playerFuncs({ db });
+  const rules = ruleFuncs({ db });
+  const game = gameFuncs({ db, rules, players });
 
-  async function createId(){
+  async function createId() {
     const newId = randomBytes(4).toString('hex');
-    const exists = await db.query("SELECT id FROM lobbies WHERE id=$id", {
-      $id: newId
+    const exists = await db.query('SELECT id FROM lobbies WHERE id=$id', {
+      $id: newId,
     });
-    if(exists.length > 0){
+    if (exists.length > 0) {
       return await createId();
     }
     return newId;
   }
 
-  async function createLobby(){
+  async function createLobby() {
     const lobbyId = await createId();
-    await db.query("INSERT INTO lobbies (id, status) VALUES ($id, $status)", {
+    await db.query('INSERT INTO lobbies (id, status) VALUES ($id, $status)', {
       $id: lobbyId,
-      $status: "lobby"
+      $status: 'lobby',
     });
     await rules.init(lobbyId);
     return lobbyId;
   }
-  
-  async function deleteLobby(lobbyId){
-    await db.query("DELETE FROM lobbies WHERE id=$id", {
-      $id: lobbyId
-    })
+
+  async function deleteLobby(lobbyId) {
+    await db.query('DELETE FROM lobbies WHERE id=$id', {
+      $id: lobbyId,
+    });
   }
 
-  async function joinLobby(lobbyId, playerData){
+  async function joinLobby(lobbyId, playerData) {
     await players.create(lobbyId, playerData);
     // check lobby status and make any necessary changes
   }
 
-  async function removePlayer(lobbyId, playerId){
+  async function removePlayer(lobbyId, playerId) {
     await players.delete(lobbyId, playerId);
-    if((await players.getByLobby(lobbyId)).length == 0){
+    if ((await players.getByLobby(lobbyId)).length == 0) {
       await deleteLobby(lobbyId);
-      console.log(await db.query("SELECT * FROM lobbies WHERE id=$id", {
-        $id: lobbyId
+      console.log(await db.query('SELECT * FROM lobbies WHERE id=$id', {
+        $id: lobbyId,
       }));
     } else {
       await game.checkPlayers(lobbyId);
-    };
+    }
   }
 
-  async function getLobbyById(lobbyId, sessionId=null){
+  async function getLobbyById(lobbyId, sessionId = null) {
     const lobbyData = {};
-    const status = (await db.query("SELECT status FROM lobbies WHERE id=$id", {
-      $id: lobbyId
+    const status = (await db.query('SELECT status FROM lobbies WHERE id=$id', {
+      $id: lobbyId,
     }));
-    if(status.length == 0){
-      throw("lobby_not_exist")
+    if (status.length == 0) {
+      throw ('lobby_not_exist');
     }
     lobbyData.status = status[0].status;
     lobbyData.rules = await rules.getByLobby(lobbyId);
     lobbyData.players = await players.getByLobby(lobbyId);
     lobbyData.playerId = await players.getId(lobbyId, sessionId);
-    if(lobbyData.playerId != null && lobbyData.status == "game"){
+    if (lobbyData.playerId != null && lobbyData.status == 'game') {
       // get gamestate
       lobbyData.gameStatus = (await game.getPlayerData(lobbyData.playerId))[0];
     }
-    return lobbyData
+    return lobbyData;
   }
 
   return {
-    game: game,
+    game,
     create: createLobby,
     delete: deleteLobby,
     join: joinLobby,
     leave: removePlayer,
     getData: getLobbyById,
-    rules: rules,
-    players: players
-  }
-}
+    rules,
+    players,
+  };
+};
