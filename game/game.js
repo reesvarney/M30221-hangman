@@ -108,13 +108,11 @@ export default ({ db, rules }) => {
         $id: playerId,
       });
       if ((await db.query('SELECT MAX(id) FROM active_players WHERE lobby_id=$lobby_id'))[0].id !== activePlayer[0].id) {
-        console.log(activePlayer);
-        await db.query('UPDATE active_players SET is_active=true WHERE lobby_id=$lobby_id ORDER BY id ASC LIMIT 1', {
+        await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT id FROM active_players WHERE lobby_id=$lobby_id ORDER BY id ASC LIMIT 1)', {
           $lobby_id: activePlayer[0].lobby_id,
         });
       } else {
-        console.log('2');
-        await db.query('UPDATE active_players SET is_active=true WHERE lobby_id=$lobby_id AND id>$id ORDER BY id ASC LIMIT 1', {
+        await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT id FROM active_players WHERE lobby_id=$lobby_id AND id>$id ORDER BY id ASC LIMIT 1)', {
           $lobby_id: activePlayer[0].lobby_id,
           $id: playerId,
         });
