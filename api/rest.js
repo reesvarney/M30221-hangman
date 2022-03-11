@@ -17,7 +17,7 @@ export default ({ express, lobbies, wss }) => {
       const data = await lobbies.getData(req.params.id, req.sessionID);
       res.json(data);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   });
 
@@ -28,7 +28,7 @@ export default ({ express, lobbies, wss }) => {
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
     }
   });
 
@@ -61,11 +61,6 @@ export default ({ express, lobbies, wss }) => {
     }
   }
 
-  router.get('/:id/results', async (req, res) => {
-    const results = await lobbies.results.getLobby(req.params.id);
-    res.json(results);
-  });
-
   // router.get('/:id/poll', checkPlayer, async (req, res) => {
 
   // });
@@ -88,7 +83,7 @@ export default ({ express, lobbies, wss }) => {
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
     }
   });
 
@@ -99,7 +94,16 @@ export default ({ express, lobbies, wss }) => {
       res.status(200);
       wss.updateClient(req.params.id);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
+    }
+  });
+
+  router.get('/results/:id', async( req, res)=> {
+    try {
+      const resultData = await lobbies.game.results.getResult(req.params.id);
+      res.json(resultData);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
   });
 

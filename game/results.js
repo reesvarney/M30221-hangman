@@ -18,7 +18,7 @@ export default ({ db }) => {
     const gameStates = await db.query('SELECT * FROM active_players LEFT JOIN player_gamestates on active_players.id=player_gamestates.player_id WHERE active_players.lobby_id=$lobby_id', {
       $lobby_id: lobbyId,
     });
-    await db.query('INSERT INTO result_players (result_id, name, word, known_letters, score, position, time_used, lives_used, finished) VALUES ($result_id, $name, $word, $known_letters, $score, $position, $time_used, $lives_used, $finished)', [
+    await db.query('INSERT INTO result_players (result_id, name, word, known_letters, score, time_used, lives_used, finished) VALUES ($result_id, $name, $word, $known_letters, $score, $time_used, $lives_used, $finished)',
       gameStates.map((a) => {
         return {
           $result_id: resultId,
@@ -26,25 +26,32 @@ export default ({ db }) => {
           $word: a.word,
           $known_letters: a.known_letters,
           $score: a.score,
-          $position: a.position,
           $time_used: a.time_used,
+          $lives_used: a.lives_used,
           $finished: a.finished,
         };
       }),
-    ]);
+    );
 
+    await db.query('UPDATE lobbies SET last_result=$last_result WHERE id=$id', {
+      $id: lobbyId,
+      $last_result: resultId,
+    });
     return resultId;
   }
 
-  async function getLobbyResults(lobbyId) {
-
-  }
-
-  async function getPlayerResults(playerId) {
-
+  async function getResultById(resultId) {
+    const data = (await db.query('SELECT * FROM results WHERE results.id=$id', {
+      $id: resultId,
+    }))[0];
+    data.players = await db.query('SELECT * FROM result_players WHERE result_id=$id', {
+      $id: resultId,
+    });
+    return data;
   }
 
   return {
+    getResult: getResultById,
     create: createResults,
   };
 };

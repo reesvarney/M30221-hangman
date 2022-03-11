@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS result_players (
   word VARCHAR(50),
   known_letters VARCHAR(50),
   score INTEGER NOT NULL DEFAULT 0,
-  position INTEGER NOT NULL DEFAULT false,
   time_used INTEGER DEFAULT null,
   lives_used INTEGER DEFAULT null,
   finished BOOLEAN NOT NULL DEFAULT false
@@ -66,6 +65,5 @@ CREATE TABLE IF NOT EXISTS player_gamestates (
   used_letters VARCHAR(26),
   lives_used INTEGER,
   time_used INTEGER,
-  finished BOOLEAN,
-  position INTEGER
+  finished BOOLEAN DEFAULT false
 );

@@ -28,6 +28,7 @@ async function getLobbyData(){
   const data = JSON.parse(await request.GET(`/api/${gameId}`));
   if("error" in data){
     console.log("ERROR", data.error);
+    window.error = data.error;
     switch(data.error){
       case "lobby_not_exist":
         window.location.href = `${window.location.protocol}//${window.location.host}`;
