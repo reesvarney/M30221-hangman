@@ -4,6 +4,7 @@ const gameId = window.gameId = query.get('id');
 import auth from "./auth.js";
 import lobby from "./lobby.js";
 import game from "./game.js";
+import results from "./results.js";
 import ws from "./ws.js";
 const ruleData = JSON.parse(await request.GET('/api/rules'));
 
@@ -52,6 +53,9 @@ async function getLobbyData(){
           break;
         case "game":
           game.display();
+          break;
+        case "results":
+          results.display();
           break;
       }
       constructPlayerList();

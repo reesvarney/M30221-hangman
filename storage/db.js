@@ -7,12 +7,8 @@ function init() {
   db = new sqlite3.Database(':memory:', async (err) => {
     if (err) console.log(err);
 
-    const file = await fs.readFile('./storage/schema/active.sql', 'utf8');
+    const file = await fs.readFile('./storage/schema.sql', 'utf8');
     for (const queryString of (file).split(';').filter(a => a.length > 1)) {
-      await query(queryString + ';');
-    }
-    const file2 = await fs.readFile('./storage/schema/persistent.sql', 'utf8');
-    for (const queryString of (file2).split(';').filter(a => a.length > 1)) {
       await query(queryString + ';');
     }
   });

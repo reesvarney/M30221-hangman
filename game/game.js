@@ -1,6 +1,8 @@
 import words from './words.js';
-
+import resultsLogic from './results.js';
 export default ({ db, rules }) => {
+  const results = resultsLogic({ db, rules });
+
   async function startGame(lobbyId) {
     // Create gamestates
     const status = (await db.query('SELECT status FROM lobbies WHERE id=$id', {
@@ -112,6 +114,7 @@ export default ({ db, rules }) => {
         return;
       }
     }
+    await results.create(gameStates[0].lobby_id);
     await db.query("UPDATE lobbies SET status='results' WHERE id=$id", {
       $id: gameStates[0].lobby_id,
     });

@@ -22,7 +22,6 @@ function createInputArea() {
   letterInput.innerHTML = '';
   if (window.gameData.gameStatus.known_letters.includes(' ')) {
     for (const letter of alphabet) {
-      console.log(window.gameData.gameStatus.used_letters.includes(letter.toLowerCase()));
       if (!window.gameData.gameStatus.used_letters.includes(letter.toLowerCase())) {
         const letterEl = document.createElement('button');
         letterEl.innerText = letter;

@@ -23,6 +23,7 @@ const server = app.listen(port, async () => {
 
   app.use(express.urlencoded());
   app.use(express.json());
+
   app.use('/', express.static('./client'));
   app.get('/', (req, res) => {
     res.sendFile(resolve('./client/index.html'));

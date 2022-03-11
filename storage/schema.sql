@@ -1,6 +1,26 @@
- CREATE TABLE IF NOT EXISTS lobbies (
+CREATE TABLE IF NOT EXISTS results (
+  id CHAR(32) PRIMARY KEY NOT NULL,
+  max_lives INTEGER DEFAULT null,
+  max_time INTEGER DEFAULT null,
+  hints BOOLEAN DEFAULT false NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS result_players (
+  result_id CHAR(32) REFERENCES results(id),
+  name VARCHAR(100) NOT NULL,
+  word VARCHAR(50),
+  known_letters VARCHAR(50),
+  score INTEGER NOT NULL DEFAULT 0,
+  position INTEGER NOT NULL DEFAULT false,
+  time_used INTEGER DEFAULT null,
+  lives_used INTEGER DEFAULT null,
+  finished BOOLEAN NOT NULL DEFAULT false
+);
+
+CREATE TABLE IF NOT EXISTS lobbies (
   id CHAR(8) UNIQUE PRIMARY KEY NOT NULL,
-  status VARCHAR(16) NOT NULL CHECK (status IN ("lobby", "game", "results"))
+  status VARCHAR(16) NOT NULL CHECK (status IN ("lobby", "game", "results")),
+  last_result CHAR(32) REFERENCES results(id)
 );
 
 CREATE TABLE IF NOT EXISTS rules (
@@ -45,5 +65,7 @@ CREATE TABLE IF NOT EXISTS player_gamestates (
   known_letters VARCHAR(24),
   used_letters VARCHAR(26),
   lives_used INTEGER,
-  time_used INTEGER
+  time_used INTEGER,
+  finished BOOLEAN,
+  position INTEGER
 );
