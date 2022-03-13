@@ -7,42 +7,46 @@ export default ({ db, rules }) => {
     // Create gamestates
     const status = (await db.query('SELECT status FROM lobbies WHERE id=$id', {
       $id: lobbyId,
-    }))[0];
-    if (status.status !== 'game') {
+    }))[0].status;
+    if (status !== 'game') {
       await db.query("UPDATE lobbies SET status='game' WHERE id=$id", {
         $id: lobbyId,
       });
 
-      const players = await db.query('SELECT id FROM active_players WHERE lobby_id=$lobby_id', {
-        $lobby_id: lobbyId,
-      });
+      await addGamestates(lobbyId);
 
-      const ruleData = await rules.getByLobby(lobbyId);
-      let word = null;
-      if (ruleData.sameWord) {
-        word = getWord(ruleData.wordLength);
-      }
-      await db.query('INSERT INTO player_gamestates (player_id, score, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $score, $word, $lives_used, $time_used, $known_letters, $used_letters)',
-        players.map((a) => {
-          const playerWord = (word != null) ? word : getWord(ruleData.wordLength);
-          console.log('test');
-          console.log('creating player gamestate', a.id);
-          return {
-            $player_id: a.id,
-            $score: 0,
-            $word: playerWord,
-            // TODO: set these values appropriately in relation to the chosen rules
-            $lives_used: 0,
-            $time_used: 0,
-            $known_letters: ' '.repeat(playerWord.length),
-            $used_letters: '',
-          };
-        }),
-      );
       await db.query('UPDATE active_players SET is_active=true WHERE id=(SELECT id FROM active_players WHERE lobby_id=$lobby_id LIMIT 1)', {
         $lobby_id: lobbyId,
       });
     }
+  }
+
+  async function addGamestates(lobbyId) {
+    const players = await db.query('SELECT id FROM active_players LEFT JOIN player_gamestates ON active_players.id=player_gamestates.player_id WHERE lobby_id=$lobby_id AND player_id IS NULL', {
+      $lobby_id: lobbyId,
+    });
+
+    const ruleData = await rules.getByLobby(lobbyId);
+    let word = null;
+    if (ruleData.sameWord) {
+      word = getWord(ruleData.wordLength);
+    }
+
+    await db.query('INSERT INTO player_gamestates (player_id, score, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $score, $word, $lives_used, $time_used, $known_letters, $used_letters)',
+      players.map((a) => {
+        const playerWord = (word != null) ? word : getWord(ruleData.wordLength);
+        return {
+          $player_id: a.id,
+          $score: 0,
+          $word: playerWord,
+          // TODO: set these values appropriately in relation to the chosen rules
+          $lives_used: 0,
+          $time_used: 0,
+          $known_letters: ' '.repeat(playerWord.length),
+          $used_letters: '',
+        };
+      }),
+    );
   }
 
   function getWord(length) {
@@ -72,9 +76,6 @@ export default ({ db, rules }) => {
           $known_letters: newKnownLetters.join(''),
           $player_id: playerGamestate.player_id,
         });
-        if (newKnownLetters.join('') === playerGamestate.word) {
-          checkEnd(playerId);
-        }
       } else {
         await db.query('UPDATE player_gamestates SET lives_used=$lives_used, used_letters=$used_letters WHERE player_id=$player_id', {
           $lives_used: playerGamestate.lives_used + 1,
@@ -89,7 +90,6 @@ export default ({ db, rules }) => {
           $known_letters: playerGamestate.word,
           $player_id: playerGamestate.player_id,
         });
-        checkEnd(playerId);
       } else {
         await db.query('UPDATE player_gamestates SET lives_used=$lives_used WHERE player_id=$player_id', {
           $lives_used: playerGamestate.lives_used + 1,
@@ -97,6 +97,7 @@ export default ({ db, rules }) => {
         });
       }
     }
+    await checkEnd(playerId);
     // replace with actual rule value
     const turns = true;
     if (turns) {
@@ -105,15 +106,15 @@ export default ({ db, rules }) => {
   }
 
   async function checkEnd(playerId) {
-    const gameStates = await db.query('SELECT word, known_letters, lobby_id FROM lobbies LEFT JOIN active_players ON lobbies.id=active_players.lobby_id LEFT JOIN player_gamestates ON active_players.id=player_gamestates.player_id WHERE lobbies.id IN (SELECT lobby_id FROM active_players WHERE id=$id)', {
+    const gameStates = await db.query('SELECT word, known_letters, lobby_id, lives_used FROM active_players LEFT JOIN lobbies ON lobbies.id=active_players.lobby_id LEFT JOIN player_gamestates ON active_players.id=player_gamestates.player_id WHERE lobbies.id IN (SELECT lobby_id FROM active_players WHERE id=$id)', {
       $id: playerId,
     });
-    const maxLives = await db.query('SELECT value FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
-      $rule_id: 'max_lives',
+    const maxLives = (await db.query('SELECT value FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
+      $rule_id: 'maxLives',
       $lobby_id: gameStates[0].lobby_id,
-    });
+    }))[0].value;
     for (const gameState of gameStates) {
-      if (gameState.word !== gameState.known_letters && gameState.lives_used !== maxLives[0].value) {
+      if (gameState.word !== gameState.known_letters && gameState.lives_used !== maxLives) {
         return;
       }
     }
@@ -136,7 +137,7 @@ export default ({ db, rules }) => {
         $id: playerId,
       });
       if ((await db.query('SELECT MAX(id) FROM active_players WHERE lobby_id=$lobby_id'))[0].id !== activePlayer[0].id) {
-        await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT id FROM active_players WHERE lobby_id=$lobby_id AND known_letters<>word AND lives_used<>$max_lives ORDER BY id ASC LIMIT 1)', {
+        await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT id FROM active_players LEFT JOIN player_gamestates ON id=player_id WHERE lobby_id=$lobby_id AND known_letters<>word AND lives_used<>$max_lives ORDER BY id ASC LIMIT 1)', {
           $lobby_id: activePlayer[0].lobby_id,
           $max_lives: maxLives[0].value,
         });
@@ -165,5 +166,6 @@ export default ({ db, rules }) => {
     takeTurn,
     results,
     getPlayerData: getAllowedData,
+    addPlayers: addGamestates,
   };
 };

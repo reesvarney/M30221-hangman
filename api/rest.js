@@ -24,7 +24,7 @@ export default ({ express, lobbies, wss }) => {
   router.post('/:id/join', async (req, res) => {
     // joins the game, authorising the user to send inputs
     try {
-      await lobbies.players.create(req.params.id, { name: req.body.name, sid: req.sessionID });
+      await lobbies.join(req.params.id, { name: req.body.name, sid: req.sessionID });
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
@@ -38,7 +38,7 @@ export default ({ express, lobbies, wss }) => {
       req.playerId = playerId;
       next();
     } else {
-      res.status(403);
+      res.status(403).json({ error: 'Not authorised' });
     }
   }
 
@@ -46,7 +46,7 @@ export default ({ express, lobbies, wss }) => {
     if (await lobbies.players.isHost(req.params.id, req.sessionID)) {
       next();
     } else {
-      res.status(403);
+      res.status(403).json({ error: 'Not authorised' });
     }
   }
 
@@ -57,7 +57,7 @@ export default ({ express, lobbies, wss }) => {
       req.playerId = playerId;
       next();
     } else {
-      res.status(403);
+      res.status(403).json({ error: 'Not authorised' });
     }
   }
 
@@ -66,9 +66,23 @@ export default ({ express, lobbies, wss }) => {
   // });
 
   router.post('/:id/start_game', checkHost, async (req, res) => {
-    await lobbies.game.start(req.params.id);
-    res.sendStatus(200);
-    wss.updateClient(req.params.id);
+    try {
+      await lobbies.game.start(req.params.id);
+      res.sendStatus(200);
+      wss.updateClient(req.params.id);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  router.post('/:id/goto_lobby', checkHost, async (req, res) => {
+    try{
+      await lobbies.game.results.leave(req.params.id);
+      res.sendStatus(200);
+      wss.updateClient(req.params.id);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
   });
 
   // router.post('/:id/accept_turn', checkPlayer, async (req, res) => {
@@ -91,14 +105,15 @@ export default ({ express, lobbies, wss }) => {
     // sets a rule
     try {
       await lobbies.rules.setValue(req.params.id, req.body.rule, req.body.value);
-      res.status(200);
+      res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
+      console.log(err.message);
       res.json({ error: err.message });
     }
   });
 
-  router.get('/results/:id', async( req, res)=> {
+  router.get('/results/:id', async (req, res) => {
     try {
       const resultData = await lobbies.game.results.getResult(req.params.id);
       res.json(resultData);

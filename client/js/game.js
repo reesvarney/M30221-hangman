@@ -10,10 +10,14 @@ function displayGame() {
     document.getElementById('page_content').innerHTML = render('game');
     window.currentPage = 'game';
     gui = hangmanCanvas.create(document.getElementById('hangman_canvas'), window.gameData.rules.maxLives.value);
+    document.addEventListener('keydown', (event) => {
+      if (alphabet.includes(event.key)) {
+        request.POST(`/api/${window.gameId}/turn`, { type: 'letter', data: event.key });
+      }
+    });
   }
   gui.setLivesUsed(window.gameData.gameStatus.lives_used);
   createInputArea();
-  createUsedLetters();
   createStatusArea();
 }
 
@@ -22,16 +26,23 @@ function createInputArea() {
   letterInput.innerHTML = '';
   if (window.gameData.gameStatus.known_letters.includes(' ')) {
     for (const letter of alphabet) {
-      if (!window.gameData.gameStatus.used_letters.includes(letter.toLowerCase())) {
-        const letterEl = document.createElement('button');
-        letterEl.innerText = letter;
+      const letterEl = document.createElement('button');
+      letterEl.classList.add('letter');
+      letterEl.innerText = letter;
+      if (window.gameData.gameStatus.used_letters.includes(letter.toLowerCase())) {
+        if (window.gameData.gameStatus.known_letters.includes(letter.toLowerCase())) {
+          letterEl.classList.add('known');
+        } else {
+          letterEl.classList.add('not-known');
+        }
+      } else {
         letterEl.addEventListener('click', () => {
-          // takeTurn(letter);
           request.POST(`/api/${window.gameId}/turn`, { type: 'letter', data: letter });
         });
-        letterInput.appendChild(letterEl);
       }
+      letterInput.appendChild(letterEl);
     }
+
     const guessInput = document.getElementById('guess_form');
     if (window.gameData.rules.fullGuesses.value) {
       guessInput.addEventListener('submit', (e) => {
@@ -61,16 +72,6 @@ function createStatusArea() {
     if (window.gameData.gameStatus.known_letters[i] !== ' ') letterBox.value = window.gameData.gameStatus.known_letters[i].toUpperCase();
     letterContainer.appendChild(letterBox);
     statusArea.appendChild(letterContainer);
-  }
-}
-
-function createUsedLetters() {
-  const usedLetters = document.getElementById('used_letters');
-  usedLetters.innerHTML = '';
-  for (const letter of window.gameData.gameStatus.used_letters) {
-    const letterEl = document.createElement('span');
-    letterEl.innerText = letter.toUpperCase();
-    usedLetters.appendChild(letterEl);
   }
 }
 

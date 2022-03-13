@@ -38,15 +38,20 @@ export default (db) => {
   async function joinLobby(lobbyId, playerData) {
     await players.create(lobbyId, playerData);
     // check lobby status and make any necessary changes
+    const status = (await db.query('SELECT status FROM lobbies WHERE id=$id', {
+      $id: lobbyId,
+    }))[0].status;
+    console.log(status);
+    if (status === 'game') {
+      console.log('adding players');
+      await game.addPlayers(lobbyId);
+    }
   }
 
   async function removePlayer(lobbyId, playerId) {
     await players.delete(lobbyId, playerId);
     if ((await players.getByLobby(lobbyId)).length === 0) {
       await deleteLobby(lobbyId);
-      console.log(await db.query('SELECT * FROM lobbies WHERE id=$id', {
-        $id: lobbyId,
-      }));
     } else {
       await game.checkPlayers(lobbyId);
     }

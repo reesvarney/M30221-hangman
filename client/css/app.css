@@ -360,10 +360,14 @@ input[type="text"]:focus{
     height: 2em;
     text-align: center;
     cursor: pointer;
-    background-color: #ffffff;
     border: none;
     border-radius: 5px;
     font-size: 1.5em;
+}
+
+[data-active="false"] #letter_input button{
+    cursor: default;
+    
 }
 
 #guess_form{
@@ -525,6 +529,11 @@ input[type="text"]:focus{
     cursor: default;
 }
 
+.letter {
+    background-color: #ffffff;
+    color: black;
+}
+
 .result-letter{
     padding: 5px;
     border-radius: 3px;
@@ -533,15 +542,17 @@ input[type="text"]:focus{
     width: 1em;
     height: 1em;
     text-align: center;
+}
+
+
+.letter.known {
+    background-color: rgb(87, 192, 99);
     color: white;
 }
 
-.result-letter.known {
-    background-color: rgb(87, 192, 99);
-}
-
-.result-letter.not-known {
+.letter.not-known {
     background-color: rgb(192, 87, 87);
+    color: white;
 }
 
 /* Media queries */

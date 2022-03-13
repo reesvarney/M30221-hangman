@@ -1,13 +1,12 @@
-async function request(address, opts={}){
+async function request(address, opts = {}) {
   const res = await fetch(address, opts);
   const text = await res.text();
-  console.log("REQUEST SENT", address);
-  return text
+  return text;
 }
 
 export default {
-  POST: (addr, data)=>{
-    return request(addr, {method: "POST", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}, body: JSON.stringify(data)})
+  POST: (addr, data) => {
+    return request(addr, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
   },
-  GET: request
+  GET: request,
 };

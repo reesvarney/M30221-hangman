@@ -32,9 +32,9 @@ function constructRules() {
     let sendDataTimeout = null;
 
     if (window.isHost) {
-      if (rule.requires != null) {
-        for (const [reqId, reqVal] of Object.entries(rule.requires)) {
-          if (window.gameData.rules[reqId].value !== reqVal) {
+      if (rule.requires !== undefined) {
+        for (const [reqName, reqValue] of Object.entries(rule.requires)) {
+          if (reqValue !== ((typeof reqValue === 'boolean') ? Boolean(window.gameData.rules[reqName].value) : window.gameData.rules[reqName].value)) {
             input.disabled = true;
             break;
           }
@@ -104,7 +104,15 @@ function constructRules() {
           input.appendChild(nullBox);
           input.appendChild(oldInput);
         } else {
-          if ((rule.requires != null && window.gameData.rules[rule.requires.rule].value !== rule.requires.value)) input.disabled = true;
+          if (rule.requires !== undefined) {
+            for (const [reqName, reqValue] of Object.entries(rule.requires)) {
+              console.log(id, reqName, reqValue, (typeof reqValue === 'boolean') ? Boolean(window.gameData.rules[reqName].value) : window.gameData.rules[reqName].value);
+              if (reqValue !== (typeof reqValue === 'boolean') ? Boolean(window.gameData.rules[reqName].value) : window.gameData.rules[reqName].value) {
+                input.disabled = true;
+                break;
+              }
+            }
+          }
           input.addEventListener('input', () => {
             if (sendDataTimeout != null) {
               clearTimeout(sendDataTimeout);

@@ -11,8 +11,8 @@ export default ({ db }) => {
     const resultId = randomUUID();
     await db.query('INSERT INTO results (id, max_lives, max_time, hints) VALUES ($id, $max_lives, $max_time, $hints)', {
       $id: resultId,
-      $max_lives: rules.max_lives,
-      $max_time: rules.max_time,
+      $max_lives: rules.maxLives,
+      $max_time: rules.maxTime,
       $hints: rules.hints,
     });
     const gameStates = await db.query('SELECT * FROM active_players LEFT JOIN player_gamestates on active_players.id=player_gamestates.player_id WHERE active_players.lobby_id=$lobby_id', {
@@ -37,6 +37,10 @@ export default ({ db }) => {
       $id: lobbyId,
       $last_result: resultId,
     });
+
+    await db.query('DELETE FROM player_gamestates WHERE player_id IN (SELECT id FROM active_players WHERE lobby_id=$lobby_id)', {
+      $lobby_id: lobbyId,
+    });
     return resultId;
   }
 
@@ -50,8 +54,15 @@ export default ({ db }) => {
     return data;
   }
 
+  async function leaveResults(lobbyId) {
+    await db.query("UPDATE lobbies SET status='lobby' WHERE id=$id", {
+      $id: lobbyId,
+    });
+  }
+
   return {
     getResult: getResultById,
     create: createResults,
+    leave: leaveResults,
   };
 };

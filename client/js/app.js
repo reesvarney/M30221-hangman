@@ -24,7 +24,6 @@ async function main(){
 }
 
 async function getLobbyData(){
-  console.log("getting data");
   const data = JSON.parse(await request.GET(`/api/${gameId}`));
   if("error" in data){
     console.log("ERROR", data.error);
@@ -35,7 +34,6 @@ async function getLobbyData(){
         break;
     }
   } else {
-    console.log(data);
     for(const [id, value] of Object.entries(data.rules)){
       ruleData[id].value = value;
     }
@@ -47,6 +45,12 @@ async function getLobbyData(){
       if(Object.fromEntries(data.players.map(a=>[a.id, a.is_host]))[data.playerId] == 1){
         window.isHost = true;
         document.querySelector("body").dataset.host = "true";
+      }
+      if(Object.fromEntries(data.players.map(a=>[a.id, a.is_active]))[data.playerId] == 1){
+        window.isActive = true;
+        document.querySelector("body").dataset.active = "true";
+      } else {
+        document.querySelector("body").dataset.active = "false";
       }
       switch(data.status){
         case "lobby":
@@ -76,7 +80,6 @@ function constructPlayerList(){
         playerEl.appendChild(hostIcon);
         playerEl.classList.add("host");
       }
-      console.log(player.id, window.gameData.playerId)
       if(player.id == window.gameData.playerId){
         playerEl.setAttribute("is-client", true);
       }

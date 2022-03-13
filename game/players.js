@@ -11,10 +11,9 @@ export default ({ db }) => {
       $session_id: sid,
       $name: name,
       $lobby_id: lobbyId,
-      $is_host: (isHost.length == 0),
+      $is_host: (isHost.length === 0),
       $is_active: false,
     });
-    console.log('creating player with id', id);
     return id;
   }
 
@@ -30,7 +29,7 @@ export default ({ db }) => {
       $lobby_id: lobbyId,
       $session_id: sid,
     });
-    return (results.length == 0) ? null : results[0].id;
+    return (results.length === 0) ? null : results[0].id;
   }
 
   async function checkHost(lobbyId, sid) {
@@ -38,7 +37,7 @@ export default ({ db }) => {
       $lobby_id: lobbyId,
       $session_id: sid,
     });
-    return (results.length == 1);
+    return (results.length === 1);
   }
 
   async function deletePlayer(lobbyId, sid) {
@@ -53,7 +52,7 @@ export default ({ db }) => {
       $lobby_id: lobbyId,
       $session_id: sid,
     });
-    return (results.length == 0) ? null : results[0].id;
+    return (results.length === 0) ? null : results[0].id;
   }
 
   return {

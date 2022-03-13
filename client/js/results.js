@@ -9,6 +9,7 @@ async function displayResults() {
       // host stuff
       document.getElementById('lobby_return').addEventListener('click', () => {
         // send request
+        request.POST(`/api/${window.gameId}/goto_lobby`);
       });
     }
   }
@@ -20,14 +21,13 @@ function constructPlayerTable() {
   const playerTable = document.querySelector('#results_table>table>tbody');
   for (const [position, player] of window.results.players.entries()) {
     let awardString = '';
-
     if (position === 0) awardString += '<span title="Winner! Finished with the most points">🏆</span>';
     if (window.results.max_lives != null && player.lives_used === 0) awardString += '<span title="Flawless game">🔥</span>';
     if (player.known_letters.trim().length === 0) awardString += '<span title="0 Letters, were you asleep?!">💤</span>';
-    if (player.won) awardString += '<span title="Completed the word!">🏁</span>';
+    if (player.word === player.known_letters) awardString += '<span title="Completed the word!">🏁</span>';
     if (player.known_letters.includes(' ') && (player.known_letters.match(/ /g)).length === 1) awardString += '<span title="So close! One letter off">😭</span>';
     if (window.results.max_lives - player.lives_used === 1) awardString += '<span title="Close call! Finished with one life remaining">😅</span>';
-    if (!player.finished) awardString += '<span title="Time\'s up! Didn\'t manage to finish the game">⏰</span>';
+    if (player.word !== player.known_letters) awardString += '<span title="Time\'s up! Didn\'t manage to finish the game">⏰</span>';
 
     let wordString = '';
     for (const letter of player.word) {
