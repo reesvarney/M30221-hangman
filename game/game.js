@@ -136,17 +136,23 @@ export default ({ db, rules }) => {
       await db.query('UPDATE active_players SET is_active=false WHERE id=$id', {
         $id: playerId,
       });
-      if ((await db.query('SELECT MAX(id) FROM active_players WHERE lobby_id=$lobby_id'))[0].id !== activePlayer[0].id) {
+      const maxId = (await db.query('SELECT MAX(id) as max FROM active_players WHERE lobby_id=$lobby_id', {
+        $lobby_id: activePlayer[0].lobby_id,
+      }))[0].max;
+      if (maxId === playerId) {
+        console.log('looping back');
         await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT id FROM active_players LEFT JOIN player_gamestates ON id=player_id WHERE lobby_id=$lobby_id AND known_letters<>word AND lives_used<>$max_lives ORDER BY id ASC LIMIT 1)', {
           $lobby_id: activePlayer[0].lobby_id,
           $max_lives: maxLives[0].value,
         });
       } else {
-        await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT id FROM active_players LEFT JOIN player_gamestates ON id=player_id WHERE lobby_id=$lobby_id AND id>$id AND known_letters<>word AND lives_used<>$max_lives ORDER BY id ASC LIMIT 1)', {
+        console.log('increasing id');
+        const query = await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT id FROM active_players LEFT JOIN player_gamestates ON id=player_id WHERE lobby_id=$lobby_id AND id>$id AND known_letters<>word AND lives_used<>$max_lives ORDER BY id ASC LIMIT 1)', {
           $lobby_id: activePlayer[0].lobby_id,
           $id: playerId,
           $max_lives: maxLives[0].value,
         });
+        console.log(query)
       }
     } else {
       // player does not exist, has probably disconnected

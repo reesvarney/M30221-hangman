@@ -41,9 +41,7 @@ export default (db) => {
     const status = (await db.query('SELECT status FROM lobbies WHERE id=$id', {
       $id: lobbyId,
     }))[0].status;
-    console.log(status);
     if (status === 'game') {
-      console.log('adding players');
       await game.addPlayers(lobbyId);
     }
   }

@@ -76,7 +76,6 @@ function constructRules() {
                 });
               } else {
                 // this.ws.emit("setRule", {rule: name, value: oldInput.value});
-                console.log(oldInput.value);
                 request.POST(`/api/${window.gameId}/rule`, {
                   rule: id,
                   value: oldInput.value,
@@ -119,7 +118,6 @@ function constructRules() {
             }
             sendDataTimeout = setTimeout(() => {
               // this.ws.emit("setRule", {rule: name, value: oldInput.value});
-              console.log(input.value);
               request.POST(`/api/${window.gameId}/rule`, {
                 rule: id,
                 value: input.value,
