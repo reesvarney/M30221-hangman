@@ -19,6 +19,7 @@ async function displayResults() {
 
 function constructPlayerTable() {
   const playerTable = document.querySelector('#results_table>table>tbody');
+  playerTable.innerHTML = '';
   for (const [position, player] of window.results.players.entries()) {
     let awardString = '';
     if (position === 0) awardString += '<span title="Winner! Finished with the most points">🏆</span>';
