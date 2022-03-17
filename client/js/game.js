@@ -11,8 +11,7 @@ function displayGame() {
     window.currentPage = 'game';
     gui = hangmanCanvas.create(document.getElementById('hangman_canvas'), window.gameData.rules.maxLives.value);
     document.addEventListener('keydown', (event) => {
-      console.log(alphabet, event.key);
-      if (alphabet.includes(event.key.toUpperCase())) {
+      if (alphabet.includes(event.key.toUpperCase()) && document.querySelector('#guess_form input') !== document.activeElement) {
         request.POST(`/api/${window.gameId}/turn`, { type: 'letter', data: event.key });
       }
     });

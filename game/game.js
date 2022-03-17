@@ -125,12 +125,12 @@ export default ({ db, rules }) => {
     const activePlayer = await db.query('SELECT id, lobby_id FROM active_players WHERE id=$id AND is_active=true', {
       $id: playerId,
     });
-    const asyncTurns = (await db.query('SELECT value FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
-      $rule_id: 'asyncTurns',
-      $lobby_id: activePlayer[0].lobby_id,
-    }))[0].value;
-    if (asyncTurns === 0) {
-      if (activePlayer.length === 1) {
+    if (activePlayer.length === 1) {
+      const asyncTurns = (await db.query('SELECT value FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
+        $rule_id: 'asyncTurns',
+        $lobby_id: activePlayer[0].lobby_id,
+      }))[0].value;
+      if (asyncTurns === 0) {
         const maxLives = await db.query('SELECT * FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
           $rule_id: 'maxLives',
           $lobby_id: activePlayer[0].lobby_id,
