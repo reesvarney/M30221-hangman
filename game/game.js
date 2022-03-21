@@ -26,15 +26,15 @@ export default ({ db, rules }) => {
       $lobby_id: lobbyId,
     });
 
-    const ruleData = await rules.getByLobby(lobbyId);
+    const lobbyRules = await rules.getByLobby(lobbyId);
     let word = null;
-    if (ruleData.sameWord) {
-      word = getWord(ruleData.wordLength);
+    if (lobbyRules.sameWord) {
+      word = getWord(lobbyRules.wordLength);
     }
 
     await db.query('INSERT INTO player_gamestates (player_id, score, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $score, $word, $lives_used, $time_used, $known_letters, $used_letters)',
       players.map((a) => {
-        const playerWord = (word != null) ? word : getWord(ruleData.wordLength);
+        const playerWord = (word != null) ? word : getWord(lobbyRules.wordLength);
         return {
           $player_id: a.id,
           $score: 0,
@@ -47,6 +47,11 @@ export default ({ db, rules }) => {
         };
       }),
     );
+    if (lobbyRules.asyncTurns === 1) {
+      await db.query('UPDATE active_players SET is_active=true WHERE id IN (SELECT player_id FROM player_gamestates WHERE finished=false) AND lobby_id=$lobby_id', {
+        $lobby_id: lobbyId,
+      });
+    }
   }
 
   function getWord(length) {
@@ -98,7 +103,6 @@ export default ({ db, rules }) => {
       }
     }
     await checkEnd(playerId);
-    // replace with actual rule value
     nextTurn(playerId);
   }
 
@@ -126,11 +130,8 @@ export default ({ db, rules }) => {
       $id: playerId,
     });
     if (activePlayer.length === 1) {
-      const asyncTurns = (await db.query('SELECT value FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
-        $rule_id: 'asyncTurns',
-        $lobby_id: activePlayer[0].lobby_id,
-      }))[0].value;
-      if (asyncTurns === 0) {
+      const lobbyRules = await rules.getLobbyRules(activePlayer[0].lobby_id);
+      if (lobbyRules.asyncTurns === 0) {
         const maxLives = await db.query('SELECT * FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
           $rule_id: 'maxLives',
           $lobby_id: activePlayer[0].lobby_id,
@@ -153,9 +154,9 @@ export default ({ db, rules }) => {
             $max_lives: maxLives[0].value,
           });
         }
-      } else {
-        // player does not exist, has probably disconnected
       }
+    } else {
+      // player does not exist, has probably disconnected
     }
   }
 
