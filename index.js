@@ -39,8 +39,13 @@ const server = app.listen(port, async () => {
   });
 
   app.get('/game/random', async (req, res) => {
-    const randomLobby = await lobbies.getPublic();
-    res.redirect(`/game?id=${randomLobby}`);
+    try {
+      const randomLobby = await lobbies.getPublic();
+      res.redirect(`/game?id=${randomLobby}`);
+    } catch (err) {
+      // Should mean that lobby does not exist
+      res.redirect('/?error=no_lobbies');
+    }
   });
 
   const sessionParser = session({

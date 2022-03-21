@@ -90,7 +90,7 @@ export default (db) => {
   }
 
   async function getPublicLobby() {
-    let available = await db.query('SELECT id FROM lobbies WHERE status IN ($status1, $status2) AND id IN (SELECT lobby_id FROM rules WHERE rule_id=$discovery AND value=1) AND id IN (SELECT lobby_id FROM rules JOIN (SELECT lobby_id, COUNT(*) count FROM active_players GROUP BY lobby_id) as lp ON rules.lobby_id=lp.lobby_id WHERE rule_id=$max_players AND (value IS NULL OR value>lp.count))', {
+    let available = await db.query('SELECT id FROM lobbies WHERE status IN ($status1, $status2) AND id IN (SELECT rules.lobby_id FROM rules WHERE rule_id=$discovery AND value=1) AND id IN (SELECT rules.lobby_id FROM rules JOIN (SELECT active_players.lobby_id, COUNT(*) as count FROM active_players GROUP BY active_players.lobby_id) as lp ON rules.lobby_id=lp.lobby_id WHERE rule_id=$max_players AND (value IS NULL OR value>lp.count))', {
       $discovery: 'discovery',
       $status1: 'lobby',
       $status2: 'results',
@@ -99,7 +99,7 @@ export default (db) => {
     if (available.length > 0) {
       return available[0].id;
     }
-    available = await db.query('SELECT id FROM lobbies WHERE id IN (SELECT lobby_id FROM rules WHERE rule_id=$discovery AND value=1) AND id IN (SELECT lobby_id FROM rules JOIN (SELECT lobby_id, COUNT(*) count FROM active_players GROUP BY lobby_id) as lp ON rules.lobby_id=lp.lobby_id WHERE rule_id=$max_players AND (value IS NULL OR value>lp.count))', {
+    available = await db.query('SELECT id FROM lobbies WHERE id IN (SELECT rules.lobby_id FROM rules WHERE rule_id=$discovery AND value=1) AND id IN (SELECT rules.lobby_id FROM rules JOIN (SELECT active_players.lobby_id, COUNT(*) as count FROM active_players GROUP BY active_players.lobby_id) as lp ON rules.lobby_id=lp.lobby_id WHERE rule_id=$max_players AND (value IS NULL OR value>lp.count))', {
       $discovery: 'discovery',
       $max_players: 'maxPlayers',
     });
