@@ -58,7 +58,8 @@ export default (db) => {
     if ((await players.getByLobby(lobbyId)).length === 0) {
       await deleteLobby(lobbyId);
     } else {
-      await game.checkPlayers(lobbyId);
+      // todo: change active player if removed player was mid turn
+      // await game.checkPlayers(lobbyId);
     }
   }
 
