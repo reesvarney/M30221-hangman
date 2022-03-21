@@ -40,7 +40,7 @@ export default (db) => {
     if (lobbyRules.multiplayer !== 1) {
       throw (new Error('lobby_not_multiplayer'));
     }
-    if (await players.getByLobby(lobbyId) === lobbyRules.maxPlayers) {
+    if ((await players.getByLobby(lobbyId)).length === lobbyRules.maxPlayers) {
       throw (new Error('lobby_max_players'));
     }
     await players.create(lobbyId, playerData);
