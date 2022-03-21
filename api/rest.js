@@ -76,7 +76,7 @@ export default ({ express, lobbies, wss }) => {
   });
 
   router.post('/:id/goto_lobby', checkHost, async (req, res) => {
-    try{
+    try {
       await lobbies.game.results.leave(req.params.id);
       res.sendStatus(200);
       wss.updateClient(req.params.id);
