@@ -93,7 +93,7 @@ export default ({ express, lobbies, wss }) => {
   router.post('/:id/turn', checkActive, async (req, res) => {
     // sends an input, todo: need to validate turn
     try {
-      await lobbies.game.takeTurn(req.playerId, req.body);
+      await lobbies.game.takeTurn(req.params.id, req.playerId, req.body);
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {

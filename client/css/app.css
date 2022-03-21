@@ -240,6 +240,11 @@ input[type="text"]:focus{
     text-decoration: none;
 }
 
+/* HOMEPAGE */
+#alt_options .btn:not(:first-of-type){
+    margin-top: 10px;
+}
+
 /* IDENTITY */
 #identity_form{
     width: 100%;

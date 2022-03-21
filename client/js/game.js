@@ -49,7 +49,7 @@ function createInputArea() {
         e.preventDefault();
         const guessText = document.querySelector('#guess_form input').value;
         // this.ws.emit("guess", guessText);
-        request.POST(`/api/${window.gameId}/turn`, { type: 'guess', data: guessText });
+        request.POST(`/api/${window.gameId}/turn`, { type: 'full_guess', data: guessText });
       });
     } else {
       guessInput.classList.add('hidden');

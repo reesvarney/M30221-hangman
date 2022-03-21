@@ -38,6 +38,11 @@ const server = app.listen(port, async () => {
     res.redirect(`/game?id=${newLobby}`);
   });
 
+  app.get('/game/random', async (req, res) => {
+    const randomLobby = await lobbies.getPublic();
+    res.redirect(`/game?id=${randomLobby}`);
+  });
+
   const sessionParser = session({
     // cookies won't need to be saved between server sessions so this can be created dynamically
     secret: randomBytes(8).toString('hex'),

@@ -35,6 +35,7 @@ export default ({ db, rules }) => {
     await db.query('INSERT INTO player_gamestates (player_id, score, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $score, $word, $lives_used, $time_used, $known_letters, $used_letters)',
       players.map((a) => {
         const playerWord = (word != null) ? word : getWord(lobbyRules.wordLength);
+        console.log(playerWord);
         return {
           $player_id: a.id,
           $score: 0,
@@ -59,7 +60,7 @@ export default ({ db, rules }) => {
   }
 
   // check in the request whether the user is authenticated to do this
-  async function takeTurn(playerId, turn) {
+  async function takeTurn(lobbyId, playerId, turn) {
     turn.data = turn.data.toLowerCase();
     const playerGamestate = (await db.query('SELECT * FROM player_gamestates WHERE player_id=$player_id', {
       $player_id: playerId,
@@ -90,6 +91,12 @@ export default ({ db, rules }) => {
       }
     } else if (turn.type === 'full_guess') {
       // check that full guesses are allowed
+      if ((await rules.getByLobby(lobbyId)).fullGuesses !== 1) {
+        throw (new Error('guess_not_allowed'));
+      }
+      if (turn.data.length !== playerGamestate.word.length) {
+        throw (new Error('bad_guess_length'));
+      }
       if (turn.data.toLowerCase() === playerGamestate.word) {
         await db.query('UPDATE player_gamestates SET known_letters=$known_letters WHERE player_id=$player_id', {
           $known_letters: playerGamestate.word,
@@ -130,7 +137,7 @@ export default ({ db, rules }) => {
       $id: playerId,
     });
     if (activePlayer.length === 1) {
-      const lobbyRules = await rules.getLobbyRules(activePlayer[0].lobby_id);
+      const lobbyRules = await rules.getByLobby(activePlayer[0].lobby_id);
       if (lobbyRules.asyncTurns === 0) {
         const maxLives = await db.query('SELECT * FROM rules WHERE rule_id=$rule_id AND lobby_id=$lobby_id', {
           $rule_id: 'maxLives',
