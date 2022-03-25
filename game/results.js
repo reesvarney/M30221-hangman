@@ -25,7 +25,7 @@ export default ({ db }) => {
           $name: a.name,
           $word: a.word,
           $known_letters: a.known_letters,
-          $score: a.score,
+          $score: calcScore(a, rules),
           $time_used: a.time_used,
           $lives_used: a.lives_used,
           $finished: a.finished,
@@ -42,6 +42,20 @@ export default ({ db }) => {
       $lobby_id: lobbyId,
     });
     return resultId;
+  }
+
+  function calcScore(gamestate, rules) {
+    let score = 0;
+    score += gamestate.known_letters.length * 2;
+    if (gamestate.finished === true) {
+      if (rules.maxTime !== null) {
+        score += (rules.maxTime - gamestate.time_used);
+      }
+      if (rules.maxLives !== null) {
+        score += (rules.maxLives - gamestate.lives_used) * 4;
+      }
+    }
+    return score;
   }
 
   async function getResultById(resultId) {

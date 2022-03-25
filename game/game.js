@@ -32,13 +32,12 @@ export default ({ db, rules }) => {
       word = getWord(lobbyRules.wordLength);
     }
 
-    await db.query('INSERT INTO player_gamestates (player_id, score, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $score, $word, $lives_used, $time_used, $known_letters, $used_letters)',
+    await db.query('INSERT INTO player_gamestates (player_id, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $word, $lives_used, $time_used, $known_letters, $used_letters)',
       players.map((a) => {
         const playerWord = (word != null) ? word : getWord(lobbyRules.wordLength);
         console.log(playerWord);
         return {
           $player_id: a.id,
-          $score: 0,
           $word: playerWord,
           // TODO: set these values appropriately in relation to the chosen rules
           $lives_used: 0,
@@ -61,55 +60,59 @@ export default ({ db, rules }) => {
 
   // check in the request whether the user is authenticated to do this
   async function takeTurn(lobbyId, playerId, turn) {
-    turn.data = turn.data.toLowerCase();
-    const playerGamestate = (await db.query('SELECT * FROM player_gamestates WHERE player_id=$player_id', {
-      $player_id: playerId,
-    }))[0];
-    // validate turn, ability to make a turn should be confirmed from the request handler
-    if (turn.type === 'letter') {
-      const newKnownLetters = playerGamestate.known_letters.split('');
-      if (playerGamestate.used_letters.includes(turn.data)) {
-        throw (new Error('letter already used'));
-      }
-      if (playerGamestate.word.includes(turn.data)) {
-        for (let i = 0; i < playerGamestate.word.length; i++) {
-          if (playerGamestate.word[i] === turn.data) {
-            newKnownLetters[i] = turn.data;
-          }
+    if (turn.data !== null) {
+      turn.data = turn.data.toLowerCase();
+      const playerGamestate = (await db.query('SELECT * FROM player_gamestates WHERE player_id=$player_id', {
+        $player_id: playerId,
+      }))[0];
+      // validate turn, ability to make a turn should be confirmed from the request handler
+      if (turn.type === 'letter') {
+        const newKnownLetters = playerGamestate.known_letters.split('');
+        if (playerGamestate.used_letters.includes(turn.data)) {
+          throw (new Error('letter already used'));
         }
-        await db.query('UPDATE player_gamestates SET known_letters=$known_letters, used_letters=$used_letters WHERE player_id=$player_id', {
-          $used_letters: playerGamestate.used_letters + turn.data,
-          $known_letters: newKnownLetters.join(''),
-          $player_id: playerGamestate.player_id,
-        });
-      } else {
-        await db.query('UPDATE player_gamestates SET lives_used=$lives_used, used_letters=$used_letters WHERE player_id=$player_id', {
-          $lives_used: playerGamestate.lives_used + 1,
-          $used_letters: playerGamestate.used_letters + turn.data,
-          $player_id: playerGamestate.player_id,
-        });
+        if (playerGamestate.word.includes(turn.data)) {
+          for (let i = 0; i < playerGamestate.word.length; i++) {
+            if (playerGamestate.word[i] === turn.data) {
+              newKnownLetters[i] = turn.data;
+            }
+          }
+          await db.query('UPDATE player_gamestates SET known_letters=$known_letters, used_letters=$used_letters WHERE player_id=$player_id', {
+            $used_letters: playerGamestate.used_letters + turn.data,
+            $known_letters: newKnownLetters.join(''),
+            $player_id: playerGamestate.player_id,
+          });
+        } else {
+          await db.query('UPDATE player_gamestates SET lives_used=lives_used + 1, used_letters=$used_letters WHERE player_id=$player_id', {
+            $used_letters: playerGamestate.used_letters + turn.data,
+            $player_id: playerGamestate.player_id,
+          });
+        }
+      } else if (turn.type === 'full_guess') {
+        // check that full guesses are allowed
+        if ((await rules.getByLobby(lobbyId)).fullGuesses !== 1) {
+          throw (new Error('guess_not_allowed'));
+        }
+        if (turn.data.length !== playerGamestate.word.length) {
+          throw (new Error('bad_guess_length'));
+        }
+        if (turn.data.toLowerCase() === playerGamestate.word) {
+          await db.query('UPDATE player_gamestates SET known_letters=$known_letters WHERE player_id=$player_id', {
+            $known_letters: playerGamestate.word,
+            $player_id: playerGamestate.player_id,
+          });
+        } else {
+          await db.query('UPDATE player_gamestates SET lives_used=lives_used + 1 WHERE player_id=$player_id', {
+            $player_id: playerGamestate.player_id,
+          });
+        }
       }
-    } else if (turn.type === 'full_guess') {
-      // check that full guesses are allowed
-      if ((await rules.getByLobby(lobbyId)).fullGuesses !== 1) {
-        throw (new Error('guess_not_allowed'));
-      }
-      if (turn.data.length !== playerGamestate.word.length) {
-        throw (new Error('bad_guess_length'));
-      }
-      if (turn.data.toLowerCase() === playerGamestate.word) {
-        await db.query('UPDATE player_gamestates SET known_letters=$known_letters WHERE player_id=$player_id', {
-          $known_letters: playerGamestate.word,
-          $player_id: playerGamestate.player_id,
-        });
-      } else {
-        await db.query('UPDATE player_gamestates SET lives_used=$lives_used WHERE player_id=$player_id', {
-          $lives_used: playerGamestate.lives_used + 1,
-          $player_id: playerGamestate.player_id,
-        });
-      }
+      await checkEnd(playerId);
+    } else {
+      await db.query('UPDATE player_gamestates SET lives_used=lives_used + 1 WHERE player_id=$player_id', {
+        $player_id: playerId,
+      });
     }
-    await checkEnd(playerId);
     nextTurn(playerId);
   }
 
@@ -169,7 +172,7 @@ export default ({ db, rules }) => {
 
   async function getAllowedData(playerId) {
     // TODO: allow players to get limited data of other players
-    const playerData = await db.query('SELECT known_letters, lives_used, score, time_used, used_letters FROM player_gamestates WHERE player_id=$player_id', {
+    const playerData = await db.query('SELECT known_letters, lives_used, time_used, used_letters FROM player_gamestates WHERE player_id=$player_id', {
       $player_id: playerId,
     });
     return playerData;

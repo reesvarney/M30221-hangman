@@ -37,15 +37,6 @@
     "defaultValue": true, 
     "allowNull": false
   },
-  "aiOpponent": {
-    "name": "AI Opponent", 
-    "type": "boolean", 
-    "defaultValue": false, 
-    "allowNull": false,
-    "requires": {
-      "multiplayer": false
-    }
-  },
   "maxPlayers": {
     "name": "Max Players",
     "type": "number",

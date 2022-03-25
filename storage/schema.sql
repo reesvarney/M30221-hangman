@@ -59,7 +59,6 @@ CREATE TABLE IF NOT EXISTS rules (
 
 CREATE TABLE IF NOT EXISTS player_gamestates (
   player_id CHAR(32) PRIMARY KEY NOT NULL,
-  score INTEGER NOT NULL,
   word VARCHAR(24),
   known_letters VARCHAR(24),
   used_letters VARCHAR(26),

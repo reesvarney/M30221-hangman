@@ -61,7 +61,7 @@ export default ({ express, lobbies, wss }) => {
     }
   }
 
-  // router.get('/:id/poll', checkPlayer, async (req, res) => {
+  // router.get('/:id/poll', checkPlayer, async (req, res) => { 
 
   // });
 

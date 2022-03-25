@@ -97,14 +97,14 @@ export default (db) => {
       $max_players: 'maxPlayers',
     });
     if (available.length > 0) {
-      return available[0].id;
+      return available[Math.floor(Math.random() * available.length)].id;
     }
     available = await db.query('SELECT id FROM lobbies WHERE id IN (SELECT rules.lobby_id FROM rules WHERE rule_id=$discovery AND value=1) AND id IN (SELECT rules.lobby_id FROM rules JOIN (SELECT active_players.lobby_id, COUNT(*) as count FROM active_players GROUP BY active_players.lobby_id) as lp ON rules.lobby_id=lp.lobby_id WHERE rule_id=$max_players AND (value IS NULL OR value>lp.count))', {
       $discovery: 'discovery',
       $max_players: 'maxPlayers',
     });
     if (available.length > 0) {
-      return available[0].id;
+      return available[Math.floor(Math.random() * available.length)].id;
     }
     throw (new Error('no_available_lobbies'));
   }

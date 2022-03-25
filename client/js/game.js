@@ -2,23 +2,40 @@ import hangmanCanvas from './hangmanCanvas.js';
 import render from './templates.js';
 import request from './request.js';
 
+let wasActive = false;
 let gui = null;
 const alphabet = Array.from({ length: 26 }, (v, i) => String.fromCharCode(65 + i));
+let turnTimeout = null;
 
 function displayGame() {
+  if (window.isActive === true && wasActive === false) {
+    if (window.gameData.rules.maxTime !== null) {
+      // do something
+    } else if (window.gameData.rules.turnTime !== null) {
+      turnTimeout = setTimeout(() => {
+        request.POST(`/api/${window.gameId}/turn`, { type: null, data: null });
+      });
+    }
+    wasActive = true;
+  }
   if (window.currentPage !== 'game') {
     document.getElementById('page_content').innerHTML = render('game');
     window.currentPage = 'game';
     gui = hangmanCanvas.create(document.getElementById('hangman_canvas'), window.gameData.rules.maxLives.value);
     document.addEventListener('keydown', (event) => {
       if (alphabet.includes(event.key.toUpperCase()) && document.querySelector('#guess_form input') !== document.activeElement) {
-        request.POST(`/api/${window.gameId}/turn`, { type: 'letter', data: event.key });
+        takeTurn('letter', event.key);
       }
     });
   }
   gui.setLivesUsed(window.gameData.gameStatus.lives_used);
   createInputArea();
   createStatusArea();
+}
+
+function takeTurn(turnType, turnData) {
+  request.POST(`/api/${window.gameId}/turn`, { type: turnType, data: turnData });
+  window.clearTimeout(turnTimeout);
 }
 
 function createInputArea() {
@@ -37,7 +54,7 @@ function createInputArea() {
         }
       } else {
         letterEl.addEventListener('click', () => {
-          request.POST(`/api/${window.gameId}/turn`, { type: 'letter', data: letter });
+          takeTurn('letter', letter);
         });
       }
       letterInput.appendChild(letterEl);
@@ -49,7 +66,7 @@ function createInputArea() {
         e.preventDefault();
         const guessText = document.querySelector('#guess_form input').value;
         // this.ws.emit("guess", guessText);
-        request.POST(`/api/${window.gameId}/turn`, { type: 'full_guess', data: guessText });
+        takeTurn('full_guess', guessText);
       });
     } else {
       guessInput.classList.add('hidden');
