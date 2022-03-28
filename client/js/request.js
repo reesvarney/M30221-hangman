@@ -1,7 +1,6 @@
 async function request(address, opts = {}) {
   const res = await fetch(address, opts);
   const text = await res.text();
-  console.log('Response: ', text);
   return text;
 }
 

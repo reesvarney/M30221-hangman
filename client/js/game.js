@@ -4,7 +4,7 @@ import request from './request.js';
 
 let wasActive = false;
 let gui = null;
-const alphabet = Array.from({ length: 26 }, (v, i) => String.fromCharCode(65 + i));
+window.alphabet = Array.from({ length: 26 }, (v, i) => String.fromCharCode(65 + i));
 let turnTimeout = null;
 
 function displayGame() {
@@ -22,11 +22,6 @@ function displayGame() {
     document.getElementById('page_content').innerHTML = render('game');
     window.currentPage = 'game';
     gui = hangmanCanvas.create(document.getElementById('hangman_canvas'), window.gameData.rules.maxLives.value);
-    document.addEventListener('keydown', (event) => {
-      if (alphabet.includes(event.key.toUpperCase()) && document.querySelector('#guess_form input') !== document.activeElement) {
-        takeTurn('letter', event.key);
-      }
-    });
   }
   gui.setLivesUsed(window.gameData.gameStatus.lives_used);
   createInputArea();
@@ -42,7 +37,7 @@ function createInputArea() {
   const letterInput = document.getElementById('letter_input');
   letterInput.innerHTML = '';
   if (window.gameData.gameStatus.known_letters.includes(' ')) {
-    for (const letter of alphabet) {
+    for (const letter of window.alphabet) {
       const letterEl = document.createElement('button');
       letterEl.classList.add('letter');
       letterEl.innerText = letter;

@@ -60,6 +60,7 @@ export default ({ db, rules }) => {
 
   // check in the request whether the user is authenticated to do this
   async function takeTurn(lobbyId, playerId, turn) {
+    console.log(turn);
     if (turn.data !== null) {
       turn.data = turn.data.toLowerCase();
       const playerGamestate = (await db.query('SELECT * FROM player_gamestates WHERE player_id=$player_id', {
@@ -125,7 +126,7 @@ export default ({ db, rules }) => {
       $lobby_id: gameStates[0].lobby_id,
     }))[0].value;
     for (const gameState of gameStates) {
-      if (gameState.word !== gameState.known_letters && gameState.lives_used !== maxLives) {
+      if (gameState.word !== gameState.known_letters && gameState.lives_used < maxLives) {
         return;
       }
     }

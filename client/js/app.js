@@ -20,7 +20,12 @@ async function main(){
     // Kind of hacky but tidies up the URL query
     window.history.replaceState(null, null, window.location.pathname);
     window.location.pathname = "/";
-  })
+  });
+  document.addEventListener('keydown', (event) => {
+    if (window.currentPage === 'game' && window.alphabet.includes(event.key.toUpperCase()) && document.querySelector('#guess_form input') !== document.activeElement) {
+      takeTurn('letter', event.key);
+    }
+  });
 }
 
 async function getLobbyData(){

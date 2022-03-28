@@ -2,6 +2,9 @@ import { randomUUID } from 'crypto';
 
 export default ({ db }) => {
   async function createPlayer(lobbyId, { name, sid }) {
+    if (name.trim().length === 0) {
+      throw (new Error('Name too short'));
+    }
     const isHost = await db.query('SELECT is_host FROM active_players WHERE is_host=true AND lobby_id=$lobby_id', {
       $lobby_id: lobbyId,
     });
@@ -9,7 +12,7 @@ export default ({ db }) => {
     await db.query('INSERT INTO active_players (id, session_id, name, lobby_id, is_host, is_active) VALUES ($id, $session_id, $name, $lobby_id, $is_host, $is_active);', {
       $id: id,
       $session_id: sid,
-      $name: name,
+      $name: name.trim(),
       $lobby_id: lobbyId,
       $is_host: (isHost.length === 0),
       $is_active: false,

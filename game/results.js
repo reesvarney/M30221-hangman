@@ -46,8 +46,8 @@ export default ({ db }) => {
 
   function calcScore(gamestate, rules) {
     let score = 0;
-    score += gamestate.known_letters.length * 2;
-    if (gamestate.finished === true) {
+    score += (gamestate.known_letters.replace(/\s/g, '')).length * 2;
+    if (gamestate.known_letters === gamestate.word) {
       if (rules.maxTime !== null) {
         score += (rules.maxTime - gamestate.time_used);
       }
