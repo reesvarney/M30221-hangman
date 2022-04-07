@@ -61,7 +61,7 @@ export default ({ express, lobbies, wss }) => {
     }
   }
 
-  // router.get('/:id/poll', checkPlayer, async (req, res) => { 
+  // router.get('/:id/poll', checkPlayer, async (req, res) => {
 
   // });
 
@@ -108,7 +108,16 @@ export default ({ express, lobbies, wss }) => {
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
-      console.log(err.message);
+      res.json({ error: err.message });
+    }
+  });
+
+  router.post('/:id/kick_player', checkHost, async (req, res) => {
+    try {
+      await lobbies.leave(req.params.id, req.body.playerId);
+      res.sendStatus(200);
+      wss.updateClient(req.params.id);
+    } catch (err) {
       res.json({ error: err.message });
     }
   });

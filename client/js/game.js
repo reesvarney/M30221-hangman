@@ -89,4 +89,5 @@ function createStatusArea() {
 
 export default {
   display: displayGame,
+  takeTurn: takeTurn
 };

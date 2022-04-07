@@ -54,6 +54,7 @@ export default (db) => {
   }
 
   async function removePlayer(lobbyId, playerId) {
+    console.log(playerId);
     await players.delete(lobbyId, playerId);
     if ((await players.getByLobby(lobbyId)).length === 0) {
       await deleteLobby(lobbyId);

@@ -31,6 +31,13 @@
   </div>
 </template>
 
+<template id="player">
+  <div class="player {{classes}}" is-client="{{isClient}}">
+    <span>{{name}}</span>
+    <button class="btn small warn kick-btn" onclick="kickPlayer('{{id}}')">Kick</button>
+  </div>
+</template>
+
 <template id="results">
   <div class="center-content top">
     <div class="card">
