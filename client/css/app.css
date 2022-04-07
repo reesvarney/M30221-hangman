@@ -215,6 +215,18 @@ input[type="text"]:focus{
     background-color: #f3f3f3;
 }
 
+.btn:disabled{
+    color: white;
+    cursor: default;
+    background-color: #aaaaaa;
+}
+
+.btn:disabled:hover{
+    color: white;
+    cursor: default;
+    background-color: #aaaaaa;
+    text-decoration: none;
+}
 /* UTILITY */
 .center-content{
     display: flex;
