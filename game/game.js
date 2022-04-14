@@ -68,7 +68,7 @@ export default ({ db, rules }) => {
       if (turn.type === 'letter') {
         const newKnownLetters = playerGamestate.known_letters.split('');
         if (playerGamestate.used_letters.includes(turn.data)) {
-          throw (new Error('letter already used'));
+          throw (new Error('letter_used'));
         }
         if (playerGamestate.word.includes(turn.data)) {
           for (let i = 0; i < playerGamestate.word.length; i++) {
@@ -93,7 +93,7 @@ export default ({ db, rules }) => {
           throw (new Error('guess_not_allowed'));
         }
         if (turn.data.length !== playerGamestate.word.length) {
-          throw (new Error('bad_guess_length'));
+          throw (new Error('guess_length'));
         }
         if (turn.data.toLowerCase() === playerGamestate.word) {
           await db.query('UPDATE player_gamestates SET known_letters=$known_letters WHERE player_id=$player_id', {
