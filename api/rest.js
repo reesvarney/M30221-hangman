@@ -17,7 +17,7 @@ export default ({ express, lobbies, wss }) => {
       const data = await lobbies.getData(req.params.id, req.sessionID);
       res.json(data);
     } catch (err) {
-      res.json({ error: err.message });
+      res.status(400).json({ error: err.message });
     }
   });
 
@@ -38,7 +38,7 @@ export default ({ express, lobbies, wss }) => {
       req.playerId = playerId;
       next();
     } else {
-      res.status(403).json({ error: 'Not authorised' });
+      res.status(403).json({ error: 'not_authorised' });
     }
   }
 
@@ -46,7 +46,7 @@ export default ({ express, lobbies, wss }) => {
     if (await lobbies.players.isHost(req.params.id, req.sessionID)) {
       next();
     } else {
-      res.status(403).json({ error: 'Not authorised' });
+      res.status(403).json({ error: 'not_authorised' });
     }
   }
 
@@ -57,7 +57,7 @@ export default ({ express, lobbies, wss }) => {
       req.playerId = playerId;
       next();
     } else {
-      res.status(403).json({ error: 'Not authorised' });
+      res.status(403).json({ error: 'not_authorised' });
     }
   }
 
@@ -108,7 +108,7 @@ export default ({ express, lobbies, wss }) => {
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
-      res.json({ error: err.message });
+      res.status(400).json({ error: err.message });
     }
   });
 

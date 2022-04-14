@@ -38,7 +38,7 @@ export default (db) => {
   async function joinLobby(lobbyId, playerData) {
     const lobbyRules = await rules.getByLobby(lobbyId);
     if (lobbyRules.multiplayer !== 1) {
-      throw (new Error('lobby_not_multiplayer'));
+      throw (new Error('lobby_singleplayer'));
     }
     if ((await players.getByLobby(lobbyId)).length === lobbyRules.maxPlayers) {
       throw (new Error('lobby_max_players'));

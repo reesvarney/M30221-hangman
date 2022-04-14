@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 export default ({ db }) => {
   async function createPlayer(lobbyId, { name, sid }) {
     if (name.trim().length === 0) {
-      throw (new Error('Name too short'));
+      throw (new Error('name_short'));
     }
     const isHost = await db.query('SELECT is_host FROM active_players WHERE is_host=true AND lobby_id=$lobby_id', {
       $lobby_id: lobbyId,
