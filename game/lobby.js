@@ -84,6 +84,11 @@ export default (db) => {
     return lobbyData;
   }
 
+  async function kickPlayer(lobbyId, playerId) {
+    const sid = await players.getSessionByPlayer(lobbyId, playerId);
+    await removePlayer(lobbyId, sid);
+  }
+
   async function getLastResult(lobbyId) {
     return (await db.query('SELECT last_result FROM lobbies WHERE id=$id', {
       $id: lobbyId,
@@ -119,6 +124,7 @@ export default (db) => {
     join: joinLobby,
     leave: removePlayer,
     getData: getLobbyById,
+    kick: kickPlayer,
     lastResult: getLastResult,
     getPublic: getPublicLobby,
   };

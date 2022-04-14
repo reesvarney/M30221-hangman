@@ -515,7 +515,12 @@ input[type="text"]:focus{
     margin-left: auto;
 }
 
-.player[is-client]{
+[data-host="false"] .kick-btn {
+    display: none;
+}
+
+
+.player[is-client="true"]{
     border-color: #008cff65;
 }
 

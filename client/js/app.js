@@ -4,7 +4,7 @@ import auth from './auth.js';
 import lobby from './lobby.js';
 import game from './game.js';
 import results from './results.js';
-import ws from './ws.js';
+import Ws from './ws.js';
 
 const query = new URLSearchParams(window.location.search);
 const gameId = window.gameId = query.get('id');
@@ -12,7 +12,7 @@ const gameId = window.gameId = query.get('id');
 async function main() {
   window.ruleData = JSON.parse(await request.GET('/api/rules'));
   if (gameId != null) {
-    const wsc = new ws();
+    const wsc = new Ws();
     wsc.on('do_update', () => {
       getLobbyData();
     });
@@ -49,11 +49,11 @@ async function getLobbyData() {
     if (data.playerId == null) {
       auth();
     } else {
-      if (Object.fromEntries(data.players.map(a => [a.id, a.is_host]))[data.playerId] == 1) {
+      if (Object.fromEntries(data.players.map(a => [a.id, a.is_host]))[data.playerId] === 1) {
         window.isHost = true;
         document.querySelector('body').dataset.host = 'true';
       }
-      if (Object.fromEntries(data.players.map(a => [a.id, a.is_active]))[data.playerId] == 1) {
+      if (Object.fromEntries(data.players.map(a => [a.id, a.is_active]))[data.playerId] === 1) {
         window.isActive = true;
         document.querySelector('body').dataset.active = 'true';
       } else {
@@ -80,7 +80,7 @@ function constructPlayerList() {
     playerGrid.innerHTML = '';
     for (const player of window.gameData.players) {
       playerGrid.innerHTML += render('player', {
-        isClient: player.id == window.gameData.playerId,
+        isClient: player.id === window.gameData.playerId,
         classes: ((player.is_host === 1) ? 'host' : '') + ((player.is_active === 1) ? ' active' : ''),
         name: ((player.is_host) ? "<span class='host-icon'>👑</span>" : '') + player.name,
         id: player.id,

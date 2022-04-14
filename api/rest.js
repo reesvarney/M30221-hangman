@@ -114,7 +114,7 @@ export default ({ express, lobbies, wss }) => {
 
   router.post('/:id/kick_player', checkHost, async (req, res) => {
     try {
-      await lobbies.leave(req.params.id, req.body.playerId);
+      await lobbies.kick(req.params.id, req.body.playerId);
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {

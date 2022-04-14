@@ -62,7 +62,7 @@ export default ({ db }) => {
     const data = (await db.query('SELECT * FROM results WHERE results.id=$id', {
       $id: resultId,
     }))[0];
-    data.players = await db.query('SELECT * FROM result_players WHERE result_id=$id', {
+    data.players = await db.query('SELECT * FROM result_players WHERE result_id=$id ORDER BY score DESC ', {
       $id: resultId,
     });
     return data;

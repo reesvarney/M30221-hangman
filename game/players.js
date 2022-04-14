@@ -35,6 +35,14 @@ export default ({ db }) => {
     return (results.length === 0) ? null : results[0].id;
   }
 
+  async function getSessionByPlayer(lobbyId, playerId) {
+    const results = await db.query('SELECT session_id FROM active_players WHERE lobby_id=$lobby_id AND id=$id', {
+      $lobby_id: lobbyId,
+      $id: playerId,
+    });
+    return (results.length === 0) ? null : results[0].session_id;
+  }
+
   async function checkHost(lobbyId, sid) {
     const results = await db.query('SELECT id, lobby_id FROM active_players WHERE lobby_id=$lobby_id AND session_id=$session_id AND is_host=true', {
       $lobby_id: lobbyId,
@@ -63,6 +71,7 @@ export default ({ db }) => {
     getByLobby: getLobbyPlayers,
     delete: deletePlayer,
     getId: getPlayerBySession,
+    getSid: getSessionByPlayer,
     isHost: checkHost,
     isActive: checkActive,
   };
