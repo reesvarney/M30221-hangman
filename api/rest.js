@@ -114,11 +114,12 @@ export default ({ express, lobbies, wss }) => {
 
   router.post('/:id/kick_player', checkHost, async (req, res) => {
     try {
-      await lobbies.kick(req.params.id, req.body.playerId);
+      const sid = await lobbies.kick(req.params.id, req.body.playerId);
       res.sendStatus(200);
       wss.updateClient(req.params.id);
+      wss.clients[req.params.id][sid].ws.terminate();
     } catch (err) {
-      res.json({ error: err.message });
+      res.status(400).json({ error: err.message });
     }
   });
 

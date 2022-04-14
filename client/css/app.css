@@ -513,7 +513,7 @@ input[type="text"]:focus{
 
 .player .kick-btn{
     margin-left: auto;
-}
+} 
 
 [data-host="false"] .kick-btn {
     display: none;
@@ -522,6 +522,10 @@ input[type="text"]:focus{
 
 .player[is-client="true"]{
     border-color: #008cff65;
+}
+
+.player[is-client="true"] .kick-btn {
+    display: none;
 }
 
 /* For showing whos turn it is */

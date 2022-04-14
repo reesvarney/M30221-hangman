@@ -4,17 +4,15 @@ const clients = {};
 function startServer({ server, sessionParser, lobbies }) {
   const wss = new WebSocketServer({ server });
 
-  const disconnectHandlers = [];
-
   wss.on('connection', (ws, req) => {
     sessionParser(req, {}, () => {
       const sid = req.sessionID;
       // remove leading slash
       const lobbyId = req.url.substring(1);
-      if (clients[lobbyId] == undefined) {
+      if (clients[lobbyId] === undefined) {
         clients[lobbyId] = {};
       }
-      if (clients[lobbyId][sid] != undefined) {
+      if (clients[lobbyId][sid] !== undefined) {
         clearInterval(clients[lobbyId][sid].heartbeat);
         clients[lobbyId][sid].ws.terminate();
       }
@@ -26,7 +24,7 @@ function startServer({ server, sessionParser, lobbies }) {
       });
 
       const heartbeat = setInterval(async () => {
-        if (alive == false) {
+        if (alive === false) {
           clearInterval(heartbeat);
           ws.terminate();
           delete clients[lobbyId][sid];
@@ -49,13 +47,13 @@ function startServer({ server, sessionParser, lobbies }) {
         updateClient(lobbyId, sid);
       }
     } else {
-      if (clients[lobbyId] != undefined && clients[lobbyId][socketId] != undefined) {
+      if (clients[lobbyId] !== undefined && clients[lobbyId][socketId] !== undefined) {
         clients[lobbyId][socketId].ws.send(JSON.stringify({ event: 'do_update' }));
       }
     }
   }
 
-  return { updateClient };
+  return { updateClient, clients };
 }
 
 export default startServer;

@@ -35,7 +35,6 @@ export default ({ db, rules }) => {
     await db.query('INSERT INTO player_gamestates (player_id, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $word, $lives_used, $time_used, $known_letters, $used_letters)',
       players.map((a) => {
         const playerWord = (word != null) ? word : getWord(lobbyRules.wordLength);
-        console.log(playerWord);
         return {
           $player_id: a.id,
           $word: playerWord,
@@ -60,7 +59,6 @@ export default ({ db, rules }) => {
 
   // check in the request whether the user is authenticated to do this
   async function takeTurn(lobbyId, playerId, turn) {
-    console.log(turn);
     if (turn.data !== null) {
       turn.data = turn.data.toLowerCase();
       const playerGamestate = (await db.query('SELECT * FROM player_gamestates WHERE player_id=$player_id', {
