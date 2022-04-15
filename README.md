@@ -1,30 +1,28 @@
 # Hangman (V2)
 NodeJS web application created for Application Programming M30221.
 
-## Project Aims
-After a previous less successful attempt at creating the game with a websocket based approach I have adopted the following goals:
- - Create a working hangman game, with feature parity to version 1
- - Complete separation between the API and logic
- - Store minimal data inside process memory, allowing for the potential of multiple server instances/ load distribution in a production environment
+## Design
+### Aims
+ - Allow users to customize their games through a system of rules
+ - Limit amount of trust given to clients as much as possible without affecting server performance too much
+ - Minimise barriers to entry such as forced accounts etc
+ 
+### Assumptions
+ - Hosts will be able to kick players at their discretion thus some trust can be put in the client e.g. for turn timers
 
-## Development
-### Setup
-1. Install nvm https://github.com/nvm-sh/nvm
-2. Clone the repository
-```bash
-git clone git@github.com:reesvarney/hangman2.git
-```
-3. Open the directory
-```bash
-cd ./hangman2
-```
-4. Install the correct version of NodeJS
-```bash
-nvm install
-```
-5. Install npm dependencies
-```bash
-npm i
+### Basic flow
+```mermaid
+stateDiagram-v2
+   [*] --> Homepage
+   Homepage --> Lobby
+   Lobby --> Homepage
+   state Lobby {
+      [*] --> Identification
+      Identification --> Rules
+      Rules --> Game
+      Game --> Results
+      Results --> Rules
+   }
 ```
 
 ### Practices
@@ -35,11 +33,68 @@ npm i
  - JS (Instantiable): `UpperCamelCase`
  - SQL: `snake_case`
 
+#### File Structure
+Includes additional information for files/ folders of note.
+```
+hangman
+│  index.js - Main server script that connects the different components.
+│  package.json
+│  .nvmrc
+│  README.md
+│  .gitignore
+│
+└──storage - Files related to the database
+│  │  db.js - Script to provide wrapper functions to interface with the database and add support for async/ await.
+│  │  schema.sql - Database initialisation code for the necessary tables
+│
+└──game - Files related to the logical components of the game
+│  │  rules.js
+│  │  rules.json - Contains JSON data for all rules
+│  │  lobby.js
+│  │  game.js
+│  │  results.js
+│  │  players.js
+│  │  words.js - Wrapper for accessing lists contained in the wordlists directory through a dictionary.
+│  └──wordlists - JSON files containing all possible words, separated by word length.
+│  │  │  ...
+│
+└──client - Static files for the client.
+│  │  index.html
+│  │  game.html
+│  └──css
+│  │  │  ...
+│  │
+│  └──js
+│  │  │  ...
+│
+└──api - API router that interacts with the logical components.
+   │  rest.js - Express router to handle most client interactions.
+   │  websocket.js - Websocket server that checks client connections and informs clients of updates.
+ ```
+ *May not be fully exhaustive of all files included in the repository.*
 
-## Deployment
-WIP
 
-## Sources
+## Running the server
+1. Install NodeJS/ NPM
+2. Open the code directory
+```bash
+cd ./hangman2
+```
+3. Install npm dependencies
+```bash
+npm i
+```
+4. Run the server
+```bash
+npm start
+```
+
+Optionally you may set the following environment variables in a `.env` file in the root directory or by including them in the run command.
+```
+PORT: The port to be used by the server (defaults to 8080)
+```
+
+### Sources
 I have used libraries or obtained data from the following sources:
  - [Express](https://www.npmjs.com/package/express)
  - [DotEnv](https://www.npmjs.com/package/dotenv)
