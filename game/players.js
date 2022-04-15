@@ -9,14 +9,18 @@ export default ({ db }) => {
       $lobby_id: lobbyId,
     });
     const id = randomUUID();
-    await db.query('INSERT INTO active_players (id, session_id, name, lobby_id, is_host, is_active) VALUES ($id, $session_id, $name, $lobby_id, $is_host, $is_active);', {
-      $id: id,
-      $session_id: sid,
-      $name: name.trim(),
-      $lobby_id: lobbyId,
-      $is_host: (isHost.length === 0),
-      $is_active: false,
-    });
+    try {
+      await db.query('INSERT INTO active_players (id, session_id, name, lobby_id, is_host, is_active) VALUES ($id, $session_id, $name, $lobby_id, $is_host, $is_active);', {
+        $id: id,
+        $session_id: sid,
+        $name: name.trim(),
+        $lobby_id: lobbyId,
+        $is_host: (isHost.length === 0),
+        $is_active: false,
+      });
+    } catch (err) {
+      throw (new Error('player_creation'));
+    }
     return id;
   }
 

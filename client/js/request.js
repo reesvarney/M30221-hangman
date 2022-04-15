@@ -1,6 +1,15 @@
+import error from './error.js';
+
 async function request(address, opts = {}) {
   const res = await fetch(address, opts);
   const text = await res.text();
+  try {
+    if ('error' in JSON.parse(text)) {
+      error.create(JSON.parse(text).error);
+    }
+  } catch {
+    // No error
+  }
   return text;
 }
 

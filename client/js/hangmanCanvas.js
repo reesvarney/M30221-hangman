@@ -38,7 +38,7 @@ function createHangmanCanvas(element, initMaxLives, size = null) {
   function setLivesUsed(val) {
     context.clearRect(0, 0, display.width, display.height);
     // Just have the option of -1 for an empty canvas
-    if (val != -1) {
+    if (val !== -1) {
       drawLine(0.1, 0.015, 0.1, 0.98);
       drawLine(0.02, 0.98, 0.2, 0.98);
       drawLine(0.1, 0.02, 0.5, 0.02);

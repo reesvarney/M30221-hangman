@@ -43,9 +43,9 @@ function createInputArea() {
       letterEl.innerText = letter;
       if (window.gameData.gameStatus.used_letters.includes(letter.toLowerCase())) {
         if (window.gameData.gameStatus.known_letters.includes(letter.toLowerCase())) {
-          letterEl.classList.add('known');
+          letterEl.classList.add('success');
         } else {
-          letterEl.classList.add('not-known');
+          letterEl.classList.add('failure');
         }
       } else {
         letterEl.addEventListener('click', () => {
@@ -89,5 +89,5 @@ function createStatusArea() {
 
 export default {
   display: displayGame,
-  takeTurn: takeTurn
+  takeTurn,
 };

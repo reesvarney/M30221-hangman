@@ -32,7 +32,7 @@ function constructPlayerTable() {
 
     let wordString = '';
     for (const letter of player.word) {
-      const known = player.known_letters.includes(letter.toLowerCase()) ? 'known' : 'not-known';
+      const known = player.known_letters.includes(letter.toLowerCase()) ? 'success' : 'failure';
       wordString += render('word_letter', {
         letter: letter.toUpperCase().trim(),
         known,

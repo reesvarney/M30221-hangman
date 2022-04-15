@@ -5,6 +5,8 @@ import lobby from './lobby.js';
 import game from './game.js';
 import results from './results.js';
 import Ws from './ws.js';
+import error from './error.js';
+window.error = error;
 
 const query = new URLSearchParams(window.location.search);
 const gameId = window.gameId = query.get('id');

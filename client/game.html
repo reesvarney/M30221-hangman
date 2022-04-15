@@ -12,13 +12,8 @@
       <span class="large">hangman</span>
     </div>
   </nav>
-  <div class="error">
-    <span id="error_name">
-      
-    </span>
-    <p id="error_text">
+  <div id="error_area">
 
-    </p>
   </div>
   <main id="page_content">
 
@@ -35,6 +30,20 @@
           <button class="btn go" type="submit" disabled>{{createOrJoin}}</button>
         </div>
       </form>
+    </div>
+  </div>
+</template>
+
+<template id="error">
+  <div class="error">
+    <div>
+      <span class="error-name">
+        Error: {{name}}
+      </span>
+      <p id="error-desc">
+        {{desc}}
+      </p>
+      <button class="error-close" onClick="this.parentElement.parentElement.remove()">x</button>
     </div>
   </div>
 </template>

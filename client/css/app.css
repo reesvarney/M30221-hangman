@@ -346,28 +346,6 @@ input[type="text"]:focus{
     color: black;
 }
 
-#used_letters{
-    min-height: 3em;
-    background-color: rgba(255,255,255,0.3);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    column-gap: 5px;
-    row-gap: 10px;
-    padding: 5px;
-}
-
-#used_letters span{
-    text-align: center;
-    height: 1em;
-    width: 1em;
-    font-size: 1.3em;
-    padding: 5px;
-    background-color: rgba(255,255,255,0.5);
-    border-radius: 5px;
-}
-
 /* GAME INPUT */
 #input_area{
     flex-shrink: 1;
@@ -400,7 +378,6 @@ input[type="text"]:focus{
 
 [data-active="false"] #letter_input button{
     cursor: default;
-    
 }
 
 #guess_form{
@@ -600,14 +577,69 @@ input[type="text"]:focus{
 }
 
 
-.letter.known {
+.letter.success {
     background-color: rgb(87, 192, 99);
     color: white;
 }
 
-.letter.not-known {
+.letter.failure {
     background-color: rgb(192, 87, 87);
     color: white;
+}
+
+/* ERROR */
+#error_area {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 100;
+}
+
+.error {
+    background-color: #c94444;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.315);
+    margin-bottom: 5px;
+    animation: fadein 0.5s;
+}
+
+.error>div{
+    position: relative;
+    padding: 15px;
+    padding-right: 50px;
+}
+
+.error .error-name {
+    font-weight: 600;
+    font-size: 1.2em;
+}
+
+.error .error-desc {
+    font-weight: 600;
+    font-size: 0.8em;
+}
+
+.error .error-close {
+    background: none;
+    color: white;
+    font-weight: bolder;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
 }
 
 /* Media queries */

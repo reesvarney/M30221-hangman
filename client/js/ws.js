@@ -15,6 +15,10 @@ class WebsocketConnection {
         }
       }
     };
+
+    this.connection.onclose = () => {
+      window.location.href = '/';
+    };
   }
 
   on(event, handler) {
