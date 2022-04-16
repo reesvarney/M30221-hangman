@@ -73,11 +73,5 @@
     "type": "boolean", 
     "defaultValue": false, 
     "allowNull": false
-  },
-  "hints": {
-    "name": "Allow Hints", 
-    "type": "boolean", 
-    "defaultValue": false, 
-    "allowNull": false
   }
 }
