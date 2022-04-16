@@ -56,6 +56,7 @@ hangman
 │  │  players.js
 │  │  words.js - Wrapper for accessing lists contained in the wordlists directory through a dictionary.
 │  └──wordlists - JSON files containing all possible words, separated by word length.
+│  │  │  getWords.js - Script to filter + convert wordlist CSV into JSON files
 │  │  │  ...
 │
 └──client - Static files for the client.
@@ -99,5 +100,5 @@ I have used libraries or obtained data from the following sources:
  - [Express](https://www.npmjs.com/package/express)
  - [DotEnv](https://www.npmjs.com/package/dotenv)
  - Words: 
-    - [ENABLE Dictionary](https://www.wordgamedictionary.com/enable/download/enable.txt)
+    - [internet-en Corpus](http://corpus.leeds.ac.uk/list.html)
     - Filtered with: [Bad Words List](https://www.cs.cmu.edu/~biglou/resources/bad-words.txt)
