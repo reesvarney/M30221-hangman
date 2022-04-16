@@ -100,5 +100,5 @@ I have used libraries or obtained data from the following sources:
  - [Express](https://www.npmjs.com/package/express)
  - [DotEnv](https://www.npmjs.com/package/dotenv)
  - Words: 
-    - [internet-en Corpus](http://corpus.leeds.ac.uk/list.html)
+    - [hackerb9/gwordlist](https://github.com/hackerb9/gwordlist)
     - Filtered with: [Bad Words List](https://www.cs.cmu.edu/~biglou/resources/bad-words.txt)
