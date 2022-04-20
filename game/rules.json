@@ -73,5 +73,11 @@
     "type": "boolean", 
     "defaultValue": false, 
     "allowNull": false
+  },
+  "dailyChallenge": {
+    "name": "Daily Challenge", 
+    "type": "boolean", 
+    "defaultValue": false, 
+    "allowNull": false
   }
 }

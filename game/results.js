@@ -9,11 +9,10 @@ export default ({ db }) => {
       return [a.rule_id, a.value];
     }));
     const resultId = randomUUID();
-    await db.query('INSERT INTO results (id, max_lives, max_time, hints) VALUES ($id, $max_lives, $max_time, $hints)', {
+    await db.query('INSERT INTO results (id, max_lives, max_time) VALUES ($id, $max_lives, $max_time)', {
       $id: resultId,
       $max_lives: rules.maxLives,
       $max_time: rules.maxTime,
-      $hints: rules.hints,
     });
     const gameStates = await db.query('SELECT * FROM active_players LEFT JOIN player_gamestates on active_players.id=player_gamestates.player_id WHERE active_players.lobby_id=$lobby_id', {
       $lobby_id: lobbyId,

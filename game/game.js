@@ -1,5 +1,6 @@
-import words from './words.js';
+import { words, getDaily } from './words.js';
 import resultsLogic from './results.js';
+
 export default ({ db, rules }) => {
   const results = resultsLogic({ db, rules });
 
@@ -28,9 +29,13 @@ export default ({ db, rules }) => {
 
     const lobbyRules = await rules.getByLobby(lobbyId);
     let word = null;
-    if (lobbyRules.sameWord) {
+    if (lobbyRules.dailyChallenge) {
+      word = getDaily();
+    } else if (lobbyRules.sameWord) {
       word = getWord(lobbyRules.wordLength);
     }
+
+
 
     await db.query('INSERT INTO player_gamestates (player_id, word, lives_used, time_used, known_letters, used_letters) VALUES ($player_id, $word, $lives_used, $time_used, $known_letters, $used_letters)',
       players.map((a) => {
@@ -123,15 +128,22 @@ export default ({ db, rules }) => {
       $rule_id: 'maxLives',
       $lobby_id: gameStates[0].lobby_id,
     }))[0].value;
+
     for (const gameState of gameStates) {
       if (gameState.word !== gameState.known_letters && gameState.lives_used < maxLives) {
+        console.log(gameState)
         return;
       }
     }
+
     await results.create(gameStates[0].lobby_id);
+
+    console.log("done results");
+    
     await db.query("UPDATE lobbies SET status='results' WHERE id=$id", {
       $id: gameStates[0].lobby_id,
     });
+    console.log("done 1")
   }
 
   async function nextTurn(playerId) {

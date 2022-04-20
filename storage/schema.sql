@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS results (
   id CHAR(32) PRIMARY KEY NOT NULL,
   max_lives INTEGER DEFAULT null,
-  max_time INTEGER DEFAULT null,
-  hints BOOLEAN DEFAULT false NOT NULL
+  max_time INTEGER DEFAULT null
 );
 
 CREATE TABLE IF NOT EXISTS result_players (
