@@ -58,7 +58,10 @@
     "name": "Same Word", 
     "type": "boolean", 
     "defaultValue": false, 
-    "allowNull": false
+    "allowNull": false,
+    "requires": {
+      "dailyChallenge": false
+    }
   },
   "wordLength": {
     "name": "Word Length", 
@@ -66,7 +69,10 @@
     "defaultValue": 6, 
     "allowNull": false,
     "minVal": 4,
-    "maxVal": 20
+    "maxVal": 20,
+    "requires": {
+      "dailyChallenge": false
+    }
   },
   "discovery": {
     "name": "Allow Strangers", 
