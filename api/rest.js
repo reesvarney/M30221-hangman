@@ -94,7 +94,6 @@ export default ({ express, lobbies, wss }) => {
     // sends an input, todo: need to validate turn
     try {
       await lobbies.game.takeTurn(req.params.id, req.playerId, req.body);
-      console.log("done 2");
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
