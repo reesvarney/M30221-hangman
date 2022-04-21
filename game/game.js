@@ -115,8 +115,9 @@ export default ({ db, rules }) => {
       await db.query('UPDATE player_gamestates SET lives_used=lives_used + 1 WHERE player_id=$player_id', {
         $player_id: playerId,
       });
+      await checkEnd(playerId);
     }
-    nextTurn(playerId);
+    await nextTurn(playerId);
   }
 
   async function checkEnd(playerId) {

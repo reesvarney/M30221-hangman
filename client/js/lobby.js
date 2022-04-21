@@ -89,7 +89,6 @@ function constructRules() {
               }
               sendDataTimeout = setTimeout(() => {
                 // this.ws.emit("setRule", {rule: name, value: oldInput.value});
-                console.log(oldInput.value);
                 request.POST(`/api/${window.gameId}/rule`, {
                   rule: id,
                   value: oldInput.value,
@@ -105,7 +104,6 @@ function constructRules() {
         } else {
           if (rule.requires !== undefined) {
             for (const [reqName, reqValue] of Object.entries(rule.requires)) {
-              console.log(id, reqName, reqValue, (typeof reqValue === 'boolean') ? Boolean(window.gameData.rules[reqName].value) : window.gameData.rules[reqName].value);
               if (reqValue !== (typeof reqValue === 'boolean') ? Boolean(window.gameData.rules[reqName].value) : window.gameData.rules[reqName].value) {
                 input.disabled = true;
                 break;

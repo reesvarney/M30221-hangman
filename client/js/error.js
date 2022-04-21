@@ -33,7 +33,7 @@ const errorData = {
     name: 'Game does not exist',
     desc: 'The game you are trying to join does not exist, please check the game ID in the URL bar.',
   },
-  no_available_lobbies: {
+  no_lobbies: {
     name: 'No games available',
     desc: 'There are no games available for you to join at this moment, please wait and try again or create a new game.',
   },
@@ -54,6 +54,13 @@ const errorData = {
 function createError(data) {
   const errorArea = document.getElementById('error_area');
   errorArea.insertAdjacentHTML('afterbegin', render('error', (typeof data === 'string') ? errorData[data] : data));
+}
+
+const urlSearchParams = new URLSearchParams(window.location.search);
+const params = Object.fromEntries(urlSearchParams.entries());
+if (params.error !== undefined) {
+  createError(params.error);
+  window.history.pushState({}, document.title, window.location.pathname);
 }
 
 export default {

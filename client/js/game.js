@@ -9,12 +9,13 @@ let turnTimeout = null;
 
 function displayGame() {
   if (window.isActive === true && wasActive === false) {
-    if (window.gameData.rules.maxTime !== null) {
+    if (window.gameData.rules.maxTime.value !== null) {
       // do something
-    } else if (window.gameData.rules.turnTime !== null) {
+    } else if (window.gameData.rules.turnTime.value !== null) {
       turnTimeout = setTimeout(() => {
         request.POST(`/api/${window.gameId}/turn`, { type: null, data: null });
-      });
+        wasActive = false;
+      }, window.gameData.rules.turnTime.value * 1000);
     }
     wasActive = true;
   }
