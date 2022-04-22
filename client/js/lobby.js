@@ -10,6 +10,11 @@ function displayLobby() {
         request.POST(`/api/${window.gameId}/start_game`);
       });
     }
+    const shareLink = document.getElementById('share_link');
+    shareLink.innerHTML = `Click to copy shareable URL or use Game ID: <span>${window.gameId}<span>`;
+    shareLink.addEventListener('click', ()=>{
+      navigator.clipboard.writeText(`${window.location.origin}/game?id=${window.gameId}`);
+    });
   }
   constructRules();
   if (window.isHost) {

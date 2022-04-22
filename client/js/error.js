@@ -52,7 +52,7 @@ const errorData = {
 };
 
 function createError(data) {
-  const errorArea = document.getElementById('error_area');
+  const errorArea = document.getElementById('popup_area');
   errorArea.insertAdjacentHTML('afterbegin', render('error', (typeof data === 'string') ? errorData[data] : data));
 }
 
