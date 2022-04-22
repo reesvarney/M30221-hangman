@@ -22,13 +22,4 @@ function getDaily() {
   return sublist[Math.floor(Math.abs(Math.sin(tomorrow)) * sublist.length)];
 }
 
-function getDailyTest(i = 0) {
-  const today = new Date(new Date(Date.now()).setHours(0, 0, 0, 0));
-  today.setDate(today.getDate() + i);
-  const sublist = words[Math.floor(Math.abs(Math.sin(today)) * 6) + 5];
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + i + 1);
-  return sublist[Math.floor(Math.abs(Math.sin(tomorrow)) * sublist.length)];
-}
-
 export { words, getDaily, getDailyTest };
