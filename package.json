@@ -1,5 +1,5 @@
 {
-  "name": "hangman2",
+  "name": "hangman",
   "version": "1.0.0",
   "description": "NodeJS web application created for Application Programming M30221.",
   "main": "index.js",
@@ -7,16 +7,10 @@
     "test": "eslint *.js",
     "start": "node index"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/reesvarney/hangman2.git"
-  },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/reesvarney/hangman2/issues"
   },
-  "homepage": "https://github.com/reesvarney/hangman2#readme",
   "type": "module",
   "dependencies": {
     "cookie-parser": "^1.4.6",
