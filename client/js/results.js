@@ -1,7 +1,19 @@
 import request from './request.js';
 import render from './templates.js';
 
+const page = location.pathname.split('/').filter(a => a.length > 0)[0];
+if (page === 'results') {
+  main();
+}
+
+async function main() {
+  window.results = JSON.parse(await request.GET(`/api/results/${location.pathname.split('/').filter(a => a.length > 0)[1]}`));
+  constructPlayerTable();
+}
+
 async function displayResults() {
+  // Handle code a bit differently here so that it can be shared between ingame results and dedicated results
+
   if (window.currentPage !== 'results') {
     document.getElementById('page_content').innerHTML = render('results');
     window.currentPage = 'results';
@@ -12,6 +24,9 @@ async function displayResults() {
         request.POST(`/api/${window.gameId}/goto_lobby`);
       });
     }
+    const resultList = JSON.parse(localStorage.getItem('results') || '[]');
+    resultList.push({ id: window.gameData.lastResult, date: Date.now() });
+    localStorage.setItem('results', JSON.stringify(resultList));
   }
   window.results = JSON.parse(await request.GET(`/api/results/${window.gameData.lastResult}`));
   constructPlayerTable();

@@ -75,14 +75,14 @@ function createInputArea() {
 function createStatusArea() {
   const statusArea = document.querySelector('#hangman_display .word-status');
   statusArea.innerHTML = '';
-  for (let i = 0; i < window.gameData.rules.wordLength.value; i++) {
+  for (let i = 0; i < window.gameData.gameStatus.known_letters.length; i++) {
     const letterContainer = document.createElement('div');
     letterContainer.classList.add('letter');
     const letterBox = document.createElement('input');
     letterBox.type = 'text';
     letterBox.maxLength = 1;
     letterBox.disabled = true;
-    if (window.gameData.gameStatus.known_letters[i] !== ' ') letterBox.value = window.gameData.gameStatus.known_letters[i].toUpperCase();
+    if (window.gameData.gameStatus.known_letters.split('')[i] !== ' ') letterBox.value = window.gameData.gameStatus.known_letters.split('')[i].toUpperCase();
     letterContainer.appendChild(letterBox);
     statusArea.appendChild(letterContainer);
   }

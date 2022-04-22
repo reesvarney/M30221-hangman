@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<head>
+  <title>hangman</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <script src="/js/results.js" type="module"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <nav>
+    <div class="brand" onclick="window.history.replaceState(null, null, window.location.pathname);window.location.pathname = '/';">
+      <span class="large">hangman</span>
+    </div>
+  </nav>
+  <div id="error_area">
+
+  </div>
+  <main>
+    <div class="center-content top">
+      <div class="card">
+        <div class="podium">
+          <div id="player_first">
+    
+          </div>
+          <div id="player_second">
+            
+          </div>
+          <div id="player_third">
+            
+          </div>
+        </div>
+        <div id="results_table">
+          <table>
+            <thead>
+              <th>
+               Awards
+              </th>
+              <th>
+                Position
+              </th>
+              <th>
+                Name
+              </th>
+              <th>
+                Word
+              </th>
+              <th>
+                Lives Remaining
+              </th>
+              <th>
+                Score
+              </th>
+            </thead>
+            <tbody>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+<template id="player_row">
+  <tr>
+    <td>
+      {{misc}}
+    </td>
+    <td>
+      {{pos}}
+    </td>
+    <td>
+      {{name}}
+    </td>
+    <td>
+      {{word}}
+    </td>
+    <td>
+      {{lives}}
+    </td>
+    <td>
+      {{score}}
+    </td>
+  </tr>
+</template>
+
+<template id="word_letter">
+  <div class="letter result-letter {{known}}">{{letter}}</div>
+</template>

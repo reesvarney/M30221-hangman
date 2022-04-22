@@ -3,7 +3,7 @@
   <title>hangman</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="/css/app.css">
-  <script src="./js/error.js" type="module"></script>
+  <script src="./js/home.js" type="module"></script>
 </head>
 <body>
   <nav>
@@ -15,7 +15,8 @@
 
   </div>
   <main>
-    <div class="center-content top">
+    <div class="center-content top card-grid">
+
       <div class="card">
         <div class="card-title center-text">
           Play
@@ -36,9 +37,19 @@
           </div>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-title center-text">
+          Recent Results
+        </div>
+        <div id="home_results">
+
+        </div>
+      </div>
+
+
     </div>
 
-  
   </main>
 
 </body>
@@ -55,4 +66,8 @@
       <button class="error-close" onClick="this.parentElement.parentElement.remove()">x</button>
     </div>
   </div>
+</template>
+
+<template id="result">
+  <a class="btn plain" href="/results/{{id}}">{{date}}</a>
 </template>

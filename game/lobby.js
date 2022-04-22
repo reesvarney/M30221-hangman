@@ -37,10 +37,11 @@ export default (db) => {
 
   async function joinLobby(lobbyId, playerData) {
     const lobbyRules = await rules.getByLobby(lobbyId);
-    if (lobbyRules.multiplayer !== 1) {
+    const connectedPlayers = (await players.getByLobby(lobbyId)).length;
+    if (lobbyRules.multiplayer !== 1 && connectedPlayers !== 0) {
       throw (new Error('lobby_singleplayer'));
     }
-    if ((await players.getByLobby(lobbyId)).length === lobbyRules.maxPlayers) {
+    if (connectedPlayers === lobbyRules.maxPlayers) {
       throw (new Error('lobby_max_players'));
     }
     await players.create(lobbyId, playerData);
@@ -53,13 +54,12 @@ export default (db) => {
     }
   }
 
-  async function removePlayer(lobbyId, playerId) {
-    await players.delete(lobbyId, playerId);
+  async function removePlayer(lobbyId, playerId, sid) {
+    // Skips to next player's turn if is active
+    await game.nextTurn(playerId);
+    await players.delete(lobbyId, sid);
     if ((await players.getByLobby(lobbyId)).length === 0) {
       await deleteLobby(lobbyId);
-    } else {
-      // todo: change active player if removed player was mid turn
-      // await game.checkPlayers(lobbyId);
     }
   }
 
@@ -84,10 +84,8 @@ export default (db) => {
   }
 
   async function kickPlayer(lobbyId, playerId) {
-    console.log(1);
     const sid = await players.getSid(lobbyId, playerId);
-    console.log(sid);
-    await removePlayer(lobbyId, sid);
+    await removePlayer(lobbyId, playerId, sid);
     return sid;
   }
 

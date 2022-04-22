@@ -33,6 +33,10 @@ const server = app.listen(port, async () => {
     res.sendFile(resolve('./client/game.html'));
   });
 
+  app.get('/results/:id', (req, res) => {
+    res.sendFile(resolve('./client/results.html'));
+  });
+
   app.get('/game/new', async (req, res) => {
     const newLobby = await lobbies.create();
     res.redirect(`/game?id=${newLobby}`);

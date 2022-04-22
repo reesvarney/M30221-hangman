@@ -192,5 +192,6 @@ export default ({ db, rules }) => {
     results,
     getPlayerData: getAllowedData,
     addPlayers: addGamestates,
+    nextTurn,
   };
 };

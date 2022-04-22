@@ -117,6 +117,7 @@ export default ({ express, lobbies, wss }) => {
       const sid = await lobbies.kick(req.params.id, req.body.playerId);
       res.sendStatus(200);
       wss.updateClient(req.params.id);
+      clearInterval(wss.clients[req.params.id][sid].heartbeat);
       wss.clients[req.params.id][sid].ws.terminate();
     } catch (err) {
       res.status(400).json({ error: err.message });

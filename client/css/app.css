@@ -71,6 +71,13 @@ main>div{
     min-height: 0px;
 }
 
+.card-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .card {
     width: auto;
     background-color: rgba(255,255,255,0.8);
@@ -230,14 +237,17 @@ input[type="text"]:focus{
 /* UTILITY */
 .center-content{
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     height: 100%;
 }
 
-.center-content.top>*{
+.center-content.top{
     margin-top: 2%;
+    padding-top: 0px;
     margin-bottom: auto;
+    align-items: start;
 }
 
 .center-text{
@@ -640,6 +650,12 @@ input[type="text"]:focus{
     to {
         opacity:1;
     }
+}
+
+/* HOME RESULTS */
+#home_results a {
+    display: block;
+    margin-bottom: 5px;
 }
 
 /* Media queries */

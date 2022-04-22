@@ -34,7 +34,7 @@
   "multiplayer": {
     "name": "Multiplayer", 
     "type": "boolean", 
-    "defaultValue": true, 
+    "defaultValue": false, 
     "allowNull": false
   },
   "maxPlayers": {
@@ -60,7 +60,8 @@
     "defaultValue": false, 
     "allowNull": false,
     "requires": {
-      "dailyChallenge": false
+      "dailyChallenge": false,
+      "multiplayer": true
     }
   },
   "wordLength": {
