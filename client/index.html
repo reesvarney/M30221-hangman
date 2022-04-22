@@ -1,73 +1,76 @@
 <!DOCTYPE html>
-<head lang="en">
-  <title>hangman</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" href="/css/app.css">
-  <script src="./js/home.js" type="module"></script>
-</head>
-<body>
-  <nav>
-    <div class="brand">
-      <span class="large">hangman</span>
-    </div>
-  </nav>
-  <div id="popup_area">
-
-  </div>
-  <main>
-    <div class="center-content top card-grid">
-
-      <div class="card">
-        <div class="card-title center-text">
-          Play
-        </div>
-        <form id="join_form" action="/game" method="GET">
-          <input name="id" type="text" placeholder="Enter game ID">
-          <button type="submit" class="btn go">Join</button>
-        </form>
-        <div class="text-divider">
-          or
-        </div>
-        <div id="alt_options">
-          <div class="center-text btn plain">
-            <a href="/game/new">Create new game</a>
-          </div>
-          <div class="center-text btn plain">
-            <a href="/game/random">Join a random game</a>
-          </div>
-        </div>
+<html lang="en">
+  <head >
+    <title>hangman</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Play hangman with your friends.">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="./js/home.js" type="module"></script>
+  </head>
+  <body>
+    <nav>
+      <div class="brand">
+        <span class="large">hangman</span>
       </div>
-
-      <div class="card">
-        <div class="card-title center-text">
-          Recent Results
+    </nav>
+    <div id="popup_area">
+  
+    </div>
+    <main>
+      <div class="center-content top card-grid">
+  
+        <div class="card">
+          <div class="card-title center-text">
+            Play
+          </div>
+          <form id="join_form" action="/game" method="GET">
+            <input name="id" type="text" placeholder="Enter game ID">
+            <button type="submit" class="btn go">Join</button>
+          </form>
+          <div class="text-divider">
+            or
+          </div>
+          <div id="alt_options">
+            <div class="center-text btn plain">
+              <a href="/game/new">Create new game</a>
+            </div>
+            <div class="center-text btn plain">
+              <a href="/game/random">Join a random game</a>
+            </div>
+          </div>
         </div>
-        <div id="home_results">
-
+  
+        <div class="card">
+          <div class="card-title center-text">
+            Recent Results
+          </div>
+          <div id="home_results">
+  
+          </div>
         </div>
+  
+  
       </div>
-
-
+  
+    </main>
+  
+  </body>
+  
+  <template id="error">
+    <div class="error">
+      <div>
+        <span class="error-name">
+          Error: {{name}}
+        </span>
+        <p id="error-desc">
+          {{desc}}
+        </p>
+        <button class="error-close" onClick="this.parentElement.parentElement.remove()">x</button>
+      </div>
     </div>
-
-  </main>
-
-</body>
-
-<template id="error">
-  <div class="error">
-    <div>
-      <span class="error-name">
-        Error: {{name}}
-      </span>
-      <p id="error-desc">
-        {{desc}}
-      </p>
-      <button class="error-close" onClick="this.parentElement.parentElement.remove()">x</button>
-    </div>
-  </div>
-</template>
-
-<template id="result">
-  <a class="btn plain" href="/results/{{id}}">{{date}}</a>
-</template>
+  </template>
+  
+  <template id="result">
+    <a class="btn plain" href="/results/{{id}}">{{date}}</a>
+  </template>
+</html>

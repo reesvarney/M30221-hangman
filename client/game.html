@@ -1,191 +1,194 @@
 <!DOCTYPE html>
-<head lang="en">
-  <title>hangman</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <script src="/js/app.js" type="module"></script>
-  <link rel="stylesheet" href="/css/app.css">
-</head>
-<!-- Container to display all game affiliated pages whilst maintaining the websocket connection -->
-<body data-host="false">
-  <nav>
-    <div class="brand">
-      <span class="large">hangman</span>
-    </div>
-  </nav>
-  <div id="popup_area">
-
-  </div>
-  <main id="page_content">
-
-  </main>
-</body>
-
-<template id="identity">
-  <div class="center-content top">
-    <div class="card">
-      <div class="card-title">{{createOrJoin}} game</div>
-      <form id="identity_form">
-        <div class="name">
-          <input type="text" name="name" placeholder="Enter username" autocomplete="username" autofocus>
-          <button class="btn go" type="submit" disabled>{{createOrJoin}}</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</template>
-
-<template id="error">
-  <div class="error">
-    <div>
-      <span class="error-name">
-        Error: {{name}}
-      </span>
-      <p id="error-desc">
-        {{desc}}
-      </p>
-      <button class="error-close" onClick="this.parentElement.parentElement.remove()">x</button>
-    </div>
-  </div>
-</template>
-
-<template id="player">
-  <div class="player {{classes}}" is-client="{{isClient}}">
-    <span>{{name}}</span>
-    <button class="btn small warn kick-btn" onclick="kickPlayer('{{id}}')">Kick</button>
-  </div>
-</template>
-
-<template id="results">
-  <div class="center-content top">
-    <div class="card">
-      <div class="podium">
-        <div id="player_first">
-
-        </div>
-        <div id="player_second">
-          
-        </div>
-        <div id="player_third">
-          
-        </div>
+<html lang="en">
+  <head>
+    <title>hangman</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Play hangman with your friends.">
+    <script src="/js/app.js" type="module"></script>
+    <link rel="stylesheet" href="/css/app.css">
+  </head>
+  <!-- Container to display all game affiliated pages whilst maintaining the websocket connection -->
+  <body data-host="false">
+    <nav>
+      <div class="brand">
+        <span class="large">hangman</span>
       </div>
-      <div id="results_table">
-        <table>
-          <thead>
-            <th>
-             Awards
-            </th>
-            <th>
-              Position
-            </th>
-            <th>
-              Name
-            </th>
-            <th>
-              Word
-            </th>
-            <th>
-              Lives Remaining
-            </th>
-            <th>
-              Score
-            </th>
-          </thead>
-          <tbody>
-            
-          </tbody>
-        </table>
-      </div>
-      <button class="btn go host-only" id="lobby_return">Return to lobby</button>
+    </nav>
+    <div id="popup_area">
+  
     </div>
-  </div>
-</template>
-
-<template id="lobby">
-  <div class="card">
-    <div class="flex-col">
-      <div id="share_link">
-      </div>
-      <div class="flex-row row-wrap">
-        <div id="rule_area">
-          <div class="card-subtitle">
-            Rules
+    <main id="page_content">
+  
+    </main>
+  </body>
+  
+  <template id="identity">
+    <div class="center-content top">
+      <div class="card">
+        <div class="card-title">{{createOrJoin}} game</div>
+        <form id="identity_form">
+          <div class="name">
+            <input type="text" name="name" placeholder="Enter username" autocomplete="username" autofocus>
+            <button class="btn go" type="submit" disabled>{{createOrJoin}}</button>
           </div>
-          <form id="game_rules">
-            
-          </form>
-        </div>
-        <div id="player_area">
-          <div class="card-subtitle">
-            Players
+        </form>
+      </div>
+    </div>
+  </template>
+  
+  <template id="error">
+    <div class="error">
+      <div>
+        <span class="error-name">
+          Error: {{name}}
+        </span>
+        <p id="error-desc">
+          {{desc}}
+        </p>
+        <button class="error-close" onClick="this.parentElement.parentElement.remove()">x</button>
+      </div>
+    </div>
+  </template>
+  
+  <template id="player">
+    <div class="player {{classes}}" is-client="{{isClient}}">
+      <span>{{name}}</span>
+      <button class="btn small warn kick-btn" onclick="kickPlayer('{{id}}')">Kick</button>
+    </div>
+  </template>
+  
+  <template id="results">
+    <div class="center-content top">
+      <div class="card">
+        <div class="podium">
+          <div id="player_first">
+  
           </div>
+          <div id="player_second">
+            
+          </div>
+          <div id="player_third">
+            
+          </div>
+        </div>
+        <div id="results_table">
+          <table>
+            <thead>
+              <th>
+               Awards
+              </th>
+              <th>
+                Position
+              </th>
+              <th>
+                Name
+              </th>
+              <th>
+                Word
+              </th>
+              <th>
+                Lives Remaining
+              </th>
+              <th>
+                Score
+              </th>
+            </thead>
+            <tbody>
+              
+            </tbody>
+          </table>
+        </div>
+        <button class="btn go host-only" id="lobby_return">Return to lobby</button>
+      </div>
+    </div>
+  </template>
+  
+  <template id="lobby">
+    <div class="card">
+      <div class="flex-col">
+        <div id="share_link">
+        </div>
+        <div class="flex-row row-wrap">
+          <div id="rule_area">
+            <div class="card-subtitle">
+              Rules
+            </div>
+            <form id="game_rules">
+              
+            </form>
+          </div>
+          <div id="player_area">
+            <div class="card-subtitle">
+              Players
+            </div>
+            <div class="player-list">
+            </div>
+          </div>
+        </div>
+        <button class="btn go host-only" id="start_btn">Start Game</button>
+      </div>
+    </div>
+  </template>
+  
+  <template id="player_row">
+    <tr>
+      <td>
+        {{misc}}
+      </td>
+      <td>
+        {{pos}}
+      </td>
+      <td>
+        {{name}}
+      </td>
+      <td>
+        {{word}}
+      </td>
+      <td>
+        {{lives}}
+      </td>
+      <td>
+        {{score}}
+      </td>
+    </tr>
+  </template>
+  
+  <template id="word_letter">
+    <div class="letter result-letter {{known}}">{{letter}}</div>
+  </template>
+  
+  <template id="game">
+    <div class="card fullscreen">
+        <div id="opponents">
           <div class="player-list">
           </div>
         </div>
-      </div>
-      <button class="btn go host-only" id="start_btn">Start Game</button>
-    </div>
-  </div>
-</template>
-
-<template id="player_row">
-  <tr>
-    <td>
-      {{misc}}
-    </td>
-    <td>
-      {{pos}}
-    </td>
-    <td>
-      {{name}}
-    </td>
-    <td>
-      {{word}}
-    </td>
-    <td>
-      {{lives}}
-    </td>
-    <td>
-      {{score}}
-    </td>
-  </tr>
-</template>
-
-<template id="word_letter">
-  <div class="letter result-letter {{known}}">{{letter}}</div>
-</template>
-
-<template id="game">
-  <div class="card fullscreen">
-      <div id="opponents">
-        <div class="player-list">
-        </div>
-      </div>
-      <div class="flex-row flex-grow">
-        <div id="hangman_display">
-          <div id="hangman_canvas">
-          </div>
-          <div id="word_status">
-          </div>
-        </div>
-        <div id="input_area">
-          <div class="card-subtitle">
-            Select a letter
-          </div>
-          <div id="letter_input">
-          </div>
-          <form id="guess_form">
-            <div class="card-subtitle">
-              Or
+        <div class="flex-row flex-grow">
+          <div id="hangman_display">
+            <div id="hangman_canvas">
             </div>
-            <input type="text" name="guess" placeholder="Guess the word">
-            <button type="submit" class="btn go">Go</button>
-          </form>
+            <div id="word_status">
+            </div>
+          </div>
+          <div id="input_area">
+            <div class="card-subtitle">
+              Select a letter
+            </div>
+            <div id="letter_input">
+            </div>
+            <form id="guess_form">
+              <div class="card-subtitle">
+                Or
+              </div>
+              <input type="text" name="guess" placeholder="Guess the word">
+              <button type="submit" class="btn go">Go</button>
+            </form>
+          </div>
+          <div id="timer_area">
+            <span class="emoji-contrast">⏱️</span>
+            <div data-timer="turnTimer"></div>
+          </div>
         </div>
-        <div id="timer_area">
-          <span class="emoji-contrast">⏱️</span>
-          <div data-timer="turnTimer"></div>
-        </div>
-      </div>
-  </div>
-</template>
+    </div>
+  </template>
+</html>
