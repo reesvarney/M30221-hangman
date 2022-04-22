@@ -12,7 +12,7 @@ function displayLobby() {
     }
     const shareableURL = `${window.location.origin}/game?id=${window.gameId}`;
     const shareLink = document.getElementById('share_link');
-    shareLink.innerHTML = `Click to copy shareable link: <span>${shareableURL}</span>`;
+    shareLink.innerHTML = shareableURL;
     shareLink.addEventListener('click', () => {
       navigator.clipboard.writeText(shareableURL);
     });
