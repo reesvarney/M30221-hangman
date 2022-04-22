@@ -124,6 +124,17 @@ export default ({ express, lobbies, wss }) => {
     }
   });
 
+  router.post('/:id/checkEnd', async(req, res)=>{
+    try {
+      lobbies.game.checkTime(req.params.id);
+      res.sendStatus(200);
+      wss.updateClient(req.params.id);
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   router.get('/results/:id', async (req, res) => {
     try {
       const resultData = await lobbies.game.results.getResult(req.params.id);

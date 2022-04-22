@@ -38,7 +38,7 @@ function constructPlayerTable() {
   for (const [position, player] of window.results.players.entries()) {
     let awardString = '';
     if (position === 0) awardString += '<span title="Winner! Finished with the most points">🏆</span>';
-    if (window.results.max_lives != null && player.lives_used === 0) awardString += '<span title="Flawless game">🔥</span>';
+    if (player.word === player.known_letters && player.lives_used === 0) awardString += '<span title="Flawless game">🔥</span>';
     if (player.known_letters.trim().length === 0) awardString += '<span title="0 Letters, were you asleep?!">💤</span>';
     if (player.word === player.known_letters) awardString += '<span title="Completed the word!">🏁</span>';
     if (player.known_letters.includes(' ') && (player.known_letters.match(/ /g)).length === 1) awardString += '<span title="So close! One letter off">😭</span>';

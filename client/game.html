@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<head>
+<head lang="en">
   <title>hangman</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="/js/app.js" type="module"></script>
   <link rel="stylesheet" href="/css/app.css">
 </head>
@@ -165,9 +165,7 @@
         <div id="hangman_display">
           <div id="hangman_canvas">
           </div>
-          <div class="word-status">
-          </div>
-          <div id="game_status">
+          <div id="word_status">
           </div>
         </div>
         <div id="input_area">
@@ -184,7 +182,9 @@
             <button type="submit" class="btn go">Go</button>
           </form>
         </div>
-        <div id="chat_area">
+        <div id="timer_area">
+          <span class="emoji-contrast">⏱️</span>
+          <div data-timer="turnTimer"></div>
         </div>
       </div>
   </div>

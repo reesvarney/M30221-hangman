@@ -6,19 +6,40 @@ export default ({ db, rules }) => {
 
   async function startGame(lobbyId) {
     // Create gamestates
+    const lobbyRules = await rules.getByLobby(lobbyId);
     const status = (await db.query('SELECT status FROM lobbies WHERE id=$id', {
       $id: lobbyId,
     }))[0].status;
     if (status !== 'game') {
-      await db.query("UPDATE lobbies SET status='game' WHERE id=$id", {
-        $id: lobbyId,
-      });
+      if (lobbyRules.maxTime !== null) {
+        const endTime = new Date(Date.now());
+        endTime.setSeconds(endTime.getSeconds() + lobbyRules.maxTime);
+        await db.query(`UPDATE lobbies SET status='game', end_time='${endTime.getTime()}' WHERE id=$id`, {
+          $id: lobbyId,
+        });
+      } else {
+        await db.query('UPDATE lobbies SET status=\'game\' WHERE id=$id', {
+          $id: lobbyId,
+        });
+      }
+
 
       await addGamestates(lobbyId);
 
       await db.query('UPDATE active_players SET is_active=true WHERE id=(SELECT id FROM active_players WHERE lobby_id=$lobby_id LIMIT 1)', {
         $lobby_id: lobbyId,
       });
+    }
+  }
+
+  async function checkTime(lobbyId) {
+    const endTime = (await db.query('SELECT end_time FROM lobbies WHERE id=$id', {
+      $id: lobbyId,
+    }))[0].end_time;
+    const timeNow = new Date(Date.now());
+    timeNow.setSeconds(timeNow.getSeconds() + 1);
+    if (endTime < timeNow) {
+      endGame(lobbyId);
     }
   }
 
@@ -135,11 +156,15 @@ export default ({ db, rules }) => {
       }
     }
 
-    await results.create(gameStates[0].lobby_id);
+    endGame(gameStates[0].lobby_id);
+  }
+
+  async function endGame(lobbyId) {
+    await results.create(lobbyId);
 
 
     await db.query("UPDATE lobbies SET status='results' WHERE id=$id", {
-      $id: gameStates[0].lobby_id,
+      $id: lobbyId,
     });
   }
 
@@ -193,5 +218,7 @@ export default ({ db, rules }) => {
     getPlayerData: getAllowedData,
     addPlayers: addGamestates,
     nextTurn,
+    end: endGame,
+    checkTime,
   };
 };

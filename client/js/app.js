@@ -84,7 +84,7 @@ function constructPlayerList() {
       playerGrid.innerHTML += render('player', {
         isClient: player.id === window.gameData.playerId,
         classes: ((player.is_host === 1) ? 'host' : '') + ((player.is_active === 1) ? ' active' : ''),
-        name: ((player.is_host) ? "<span class='host-icon'>👑</span>" : '') + player.name,
+        name: ((player.is_host) ? "<span class='host-icon emoji-contrast'>👑</span>" : '') + player.name,
         id: player.id,
       });
     }

@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS result_players (
 CREATE TABLE IF NOT EXISTS lobbies (
   id CHAR(8) UNIQUE PRIMARY KEY NOT NULL,
   status VARCHAR(16) NOT NULL CHECK (status IN ("lobby", "game", "results")),
-  last_result CHAR(32) REFERENCES results(id)
+  last_result CHAR(32) REFERENCES results(id),
+  end_time INTEGER DEFAULT null
 );
 
 CREATE TABLE IF NOT EXISTS rules (

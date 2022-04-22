@@ -16,7 +16,7 @@
     "type": "number", 
     "defaultValue": null, 
     "allowNull": true,
-    "minVal": 30,
+    "minVal": 10,
     "requires": {
       "asyncTurns": true
     }

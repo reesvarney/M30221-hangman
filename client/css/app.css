@@ -20,7 +20,7 @@ html{
     100% {
         background: hsla(0, 50%, 40%);
     }
-  }
+}
 
 body {
     width: 100%;
@@ -151,6 +151,10 @@ main>div{
     display: flex;
     flex-direction: row;
     column-gap: 10px;
+}
+
+.emoji-contrast {
+    filter: drop-shadow(0 0 2px black);
 }
 
 /* FORM */
@@ -327,7 +331,7 @@ input[type="text"]:focus{
     min-width: 0px;
 }
 
-.word-status {
+#word_status {
     display: flex;
     flex-direction: row;
     column-gap: 2px;
@@ -336,7 +340,7 @@ input[type="text"]:focus{
     gap: 10px;
 }
 
-.word-status>.letter{
+#word_status>.letter{
     flex-grow: 1;
     min-width: 0px;
     min-height: 0px;
@@ -344,7 +348,7 @@ input[type="text"]:focus{
     max-height: 3em;
 }
 
-.word-status>.letter>input{
+#word_status>.letter>input{
     box-sizing: border-box;
     width: 100%;
     height: 0px;
@@ -420,6 +424,19 @@ input[type="text"]:focus{
     max-width: 10em;
     padding: 5px;
     font-size: 1em;
+}
+
+/* TIMER */
+#timer_area {
+    align-self: flex-end;
+    padding: 20px;
+    font-size: 1.7em;
+    font-weight: 600;
+    color:#666666;
+}
+
+#timer_area>*{
+    display: inline-block;
 }
 
 /* LOBBY */
@@ -531,7 +548,6 @@ input[type="text"]:focus{
 }
 
 .player .host-icon{
-    filter: drop-shadow(0 0 2px black);
     margin-right: 15px;
 }
 

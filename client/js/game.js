@@ -1,25 +1,30 @@
 import hangmanCanvas from './hangmanCanvas.js';
 import render from './templates.js';
 import request from './request.js';
+import startTimer from './timer.js';
 
 let wasActive = false;
 let gui = null;
 window.alphabet = Array.from({ length: 26 }, (v, i) => String.fromCharCode(65 + i));
-let turnTimeout = null;
+let endTimeout = () => {};
 
 function displayGame() {
   if (window.isActive === true && wasActive === false) {
-    if (window.gameData.rules.maxTime.value !== null) {
-      // do something
-    } else if (window.gameData.rules.turnTime.value !== null) {
-      turnTimeout = setTimeout(() => {
+    if (window.gameData.rules.turnTime.value !== null) {
+      endTimeout = startTimer(window.gameData.rules.turnTime.value, 'turnTimer', () => {
         request.POST(`/api/${window.gameId}/turn`, { type: null, data: null });
         wasActive = false;
-      }, window.gameData.rules.turnTime.value * 1000);
+      });
     }
     wasActive = true;
   }
   if (window.currentPage !== 'game') {
+    if (window.gameData.rules.maxTime.value !== null) {
+      // do something
+      endTimeout = startTimer(window.gameData.rules.maxTime.value, 'turnTimer', () => {
+        request.POST(`/api/${window.gameId}/checkEnd`);
+      });
+    } 
     document.getElementById('page_content').innerHTML = render('game');
     window.currentPage = 'game';
     gui = hangmanCanvas.create(document.getElementById('hangman_canvas'), window.gameData.rules.maxLives.value);
@@ -31,7 +36,7 @@ function displayGame() {
 
 function takeTurn(turnType, turnData) {
   request.POST(`/api/${window.gameId}/turn`, { type: turnType, data: turnData });
-  window.clearTimeout(turnTimeout);
+  endTimeout();
 }
 
 function createInputArea() {
@@ -73,7 +78,7 @@ function createInputArea() {
 }
 
 function createStatusArea() {
-  const statusArea = document.querySelector('#hangman_display .word-status');
+  const statusArea = document.getElementById('word_status');
   statusArea.innerHTML = '';
   for (let i = 0; i < window.gameData.gameStatus.known_letters.length; i++) {
     const letterContainer = document.createElement('div');
