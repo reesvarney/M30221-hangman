@@ -32,15 +32,15 @@ export default ({ express, lobbies, wss }) => {
     }
   });
 
-  async function checkPlayer(req, res, next) {
-    const playerId = await lobbies.players.getId(req.params.id, req.sessionID);
-    if (playerId != null) {
-      req.playerId = playerId;
-      next();
-    } else {
-      res.status(403).json({ error: 'not_authorised' });
-    }
-  }
+  // async function checkPlayer(req, res, next) {
+  //   const playerId = await lobbies.players.getId(req.params.id, req.sessionID);
+  //   if (playerId != null) {
+  //     req.playerId = playerId;
+  //     next();
+  //   } else {
+  //     res.status(403).json({ error: 'not_authorised' });
+  //   }
+  // }
 
   async function checkHost(req, res, next) {
     if (await lobbies.players.isHost(req.params.id, req.sessionID)) {
@@ -124,13 +124,12 @@ export default ({ express, lobbies, wss }) => {
     }
   });
 
-  router.post('/:id/checkEnd', async(req, res)=>{
+  router.post('/:id/checkEnd', async (req, res) => {
     try {
-      lobbies.game.checkTime(req.params.id);
+      await lobbies.game.checkTime(req.params.id);
       res.sendStatus(200);
       wss.updateClient(req.params.id);
     } catch (err) {
-      console.log(err);
       res.status(400).json({ error: err.message });
     }
   });

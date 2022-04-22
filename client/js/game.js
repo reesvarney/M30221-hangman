@@ -24,7 +24,7 @@ function displayGame() {
       endTimeout = startTimer(window.gameData.rules.maxTime.value, 'turnTimer', () => {
         request.POST(`/api/${window.gameId}/checkEnd`);
       });
-    } 
+    }
     document.getElementById('page_content').innerHTML = render('game');
     window.currentPage = 'game';
     gui = hangmanCanvas.create(document.getElementById('hangman_canvas'), window.gameData.rules.maxLives.value);
