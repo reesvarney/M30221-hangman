@@ -22,4 +22,4 @@ function getDaily() {
   return sublist[Math.floor(Math.abs(Math.sin(tomorrow)) * sublist.length)];
 }
 
-export { words, getDaily, getDailyTest };
+export { words, getDaily };
