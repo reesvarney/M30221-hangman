@@ -1,6 +1,6 @@
 class WebsocketConnection {
   constructor() {
-    this.connection = new WebSocket(`ws${(location.protocol == "https") ? "s" : ""}://${window.location.host}/${window.gameId}`);
+    this.connection = new WebSocket(`ws${(location.protocol == "https:") ? "s" : ""}://${window.location.host}/${window.gameId}`);
     this.createListeners();
     this.handlers = {};
   }
