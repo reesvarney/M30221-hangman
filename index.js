@@ -1,7 +1,8 @@
 'use strict';
 import 'dotenv/config';
 import express from 'express';
-import session from 'express-session';
+import session from 'cookie-session';
+import cookieParser from 'cookie-parser';
 import { resolve } from 'path';
 import { randomBytes } from 'crypto';
 import db from './storage/db.js';
@@ -11,7 +12,7 @@ import startWSS from './api/websocket.js';
 
 const app = express();
 const port = process.env.PORT || 8080;
-
+const secret = randomBytes(8).toString('hex');
 
 const server = app.listen(port, async () => {
   console.log(`Listening on port: ${server.address().port}`);
@@ -23,6 +24,13 @@ const server = app.listen(port, async () => {
 
   app.use(express.urlencoded());
   app.use(express.json());
+  app.use(cookieParser(secret));
+
+
+  app.use((req, res, next) => {
+    req.sessionID = req.cookies?.session;
+    next();
+  });
 
   app.use('/', express.static('./client'));
   app.get('/', (req, res) => {
@@ -54,7 +62,8 @@ const server = app.listen(port, async () => {
 
   const sessionParser = session({
     // cookies won't need to be saved between server sessions so this can be created dynamically
-    secret: randomBytes(8).toString('hex'),
+    name: 'session',
+    keys: [secret],
     resave: false,
     saveUninitialized: true,
   });

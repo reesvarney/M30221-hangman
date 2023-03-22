@@ -1,6 +1,7 @@
 import error from './error.js';
 
 async function request(address, opts = {}) {
+
   const res = await fetch(address, opts);
   const text = await res.text();
   try {
