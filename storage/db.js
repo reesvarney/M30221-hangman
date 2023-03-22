@@ -4,7 +4,7 @@ let db = null;
 
 // TODO: Support multiple database types such as postgres to improve performance
 function init() {
-  db = new sqlite3.Database(':memory:', async (err) => {
+  db = new sqlite3.Database('./hangman.db', async (err) => {
     if (err) console.log(err);
 
     const file = await fs.readFile('./storage/schema.sql', 'utf8');
